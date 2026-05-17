@@ -1,4 +1,5 @@
 using NockChat.Api.Extensions;
+using NockChat.Application.Extensions;
 using NockChat.Persistence.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,7 @@ builder.AddLogging();
 
 builder.Services.AddVersioning();
 builder.Services.AddRateLimiting();
+builder.Services.AddApplication();
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
