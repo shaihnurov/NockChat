@@ -10,4 +10,10 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NockChat.Application\NockChat.Application.csproj" />
+    <ProjectReference Include="..\NockChat.Infrastructure\NockChat.Infrastructure.csproj" />
+    <ProjectReference Include="..\NockChat.Persistence\NockChat.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>

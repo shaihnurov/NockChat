@@ -1,7 +1,7 @@
 <Solution>
   <Project Path="NockChat.Api/NockChat.Api.csproj" />
-  <Project Path="NockChat.Messages/NockChat.Messages.csproj" />
-  <Project Path="NockChat.Rooms/NockChat.Rooms.csproj" />
-  <Project Path="NockChat.Shared/NockChat.Shared.csproj" />
-  <Project Path="NockChat.Users/NockChat.Users.csproj" />
+  <Project Path="NockChat.Application/NockChat.Application.csproj" />
+  <Project Path="NockChat.Domain/NockChat.Domain.csproj" />
+  <Project Path="NockChat.Infrastructure/NockChat.Infrastructure.csproj" />
+  <Project Path="NockChat.Persistence/NockChat.Persistence.csproj" />
 </Solution>
