@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="NockChat.Api/NockChat.Api.csproj" />
+  <Project Path="NockChat.Messages/NockChat.Messages.csproj" />
+  <Project Path="NockChat.Rooms/NockChat.Rooms.csproj" />
+  <Project Path="NockChat.Shared/NockChat.Shared.csproj" />
+  <Project Path="NockChat.Users/NockChat.Users.csproj" />
+</Solution>
