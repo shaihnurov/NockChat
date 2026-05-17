@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NockChat.Services.Common.DataStorage.Settings;
-using NockChat.Services.Common.DependencyInjection;
 using NockChat.Services.Common.Extensions.Debounce;
 using NockChat.Services.Common.Extensions.Navigations;
 using NockChat.Services.Common.Navigations;
 using NockChat.Services.Common.Notifications;
 using NockChat.Services.Common.UI;
+using NockChat.Services.HTTP;
+using NockChat.Services.HTTP.Network;
+using NockChat.Services.HTTP.Options;
 using NockChat.ViewModels;
 
 namespace NockChat.Services.Common.DependencyInjection
@@ -25,6 +27,7 @@ namespace NockChat.Services.Common.DependencyInjection
             services.AddSingleton<INotificationService, NotificationService>();
             services.AddSingleton<IAppUiState, AppUiState>();
             services.AddSingleton<ISettingsService, SettingsService>();
+            services.AddSingleton<INetworkService, NetworkService>();
 
             return services;
         }
@@ -37,6 +40,7 @@ namespace NockChat.Services.Common.DependencyInjection
             services.AddTransient<IDebounceDispatcher, DebounceDispatcher>();
 
             services.AddViewModel<MainViewModel>(ServiceLifetime.Transient);
+            services.AddViewModel<HomeViewModel>(ServiceLifetime.Transient);
 
             return services;
         }
@@ -44,8 +48,12 @@ namespace NockChat.Services.Common.DependencyInjection
         /// <summary>
         /// Регистрация общих библиотечных сервисов
         /// </summary>
-        public static IServiceCollection AddCommonServices(this IServiceCollection services)
+        public static IServiceCollection AddCommonServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddMemoryCache();
+
+            services.AddHttpClient<IHttpService, HttpService>();
+            services.Configure<HttpServiceOptions>(configuration.GetSection("HttpService"));
 
             return services;
         }

@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="850"
+             x:Class="NockChat.Views.HomeView"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:converters="using:NockChat.Services.Common.Converters"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:vm="using:NockChat.ViewModels"
+             x:DataType="vm:HomeViewModel">
+
+    <Grid RowDefinitions="Auto *" RowSpacing="15" VerticalAlignment="Center">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <avalonia:MaterialIcon Width="30" Height="30" Kind="AbjadArabic" 
+                    Foreground="{DynamicResource SukiPrimaryColor}"/>
+                
+            <TextBlock Text="Создайте комнату и отправьте&#x0a;ссылку для общения"
+                       FontSize="17"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Spacing="15">
+            <Separator Width="250"/>
+
+		    <u:IconButton Icon="{DynamicResource SemiIconKeyStroked}" 
+                Content="Создать комнату" Command="{Binding GeneratedChatRoomCommand}"
+                Classes="Colorful Primary" 
+                Theme="{DynamicResource OutlineIconButton}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

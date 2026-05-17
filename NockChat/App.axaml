@@ -2,14 +2,39 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:NockChat"
              x:Class="NockChat.App"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:semi="https://irihi.tech/semi"
+             RequestedThemeVariant="{x:Null}">
 
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
 
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://NockChat/Styles/Constellation.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <FontFamily x:Key="Architexture">avares://NockChat/Assets/Fonts#Architexture</FontFamily>
+
+            <x:Double x:Key="ControlContentThemeFontSize">12</x:Double>
+        </ResourceDictionary>
+    </Application.Resources>
+
     <Application.Styles>
-        <FluentTheme />
+        <semi:SemiTheme Locale="ru-RU" />
+        <semi:SemiPopupAnimations />
+        <semi:UrsaSemiTheme Locale="ru-RU"/>
+
+        <avalonia:MaterialIconStyles />
+
+        <Style Selector="Button, TextBox, ToggleButton, ContentControl">
+            <Setter Property="FontFamily" Value="{DynamicResource Architexture}"/>
+        </Style>
+
+        <Style Selector="TextBlock">
+            <Setter Property="TextBlock.FontFamily" Value="{DynamicResource Architexture}"/>
+        </Style>
     </Application.Styles>
 </Application>
