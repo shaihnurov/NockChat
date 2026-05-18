@@ -16,9 +16,19 @@ namespace NockChat.Services.HTTP
         Task<(bool Success, T? Data, string? ErrorMessage)> GetAsync<T>(string endpoint, CancellationToken ct = default);
 
         /// <summary>
+        /// Выполняет HTTP GET-запрос
+        /// </summary>
+        Task<(bool Success, T? Data, string? ErrorMessage)> GetAsync<T>(string endpoint, string token, CancellationToken ct = default);
+
+        /// <summary>
         /// Выполняет HTTP POST-запрос с JSON-телом
         /// </summary>
         Task<(bool Success, T? Data, string? ErrorMessage)> PostAsync<T>(string endpoint, object body, CancellationToken ct = default);
+
+        /// <summary>
+        /// Выполняет HTTP POST-запрос с JSON-телом
+        /// </summary>
+        Task<(bool Success, T? Data, string? ErrorMessage)> PostAsync<T>(string endpoint, object body, string token, CancellationToken ct = default);
 
         /// <summary>
         /// Выполняет HTTP POST-запрос с multipart/form-data содержимым.

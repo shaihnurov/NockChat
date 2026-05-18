@@ -33,8 +33,16 @@ namespace NockChat.Services.HTTP
             => SendAsync<T>(HttpMethod.Get, endpoint, ct: ct);
 
         /// <inheritdoc />
+        public Task<(bool Success, T? Data, string? ErrorMessage)> GetAsync<T>(string endpoint, string token, CancellationToken ct = default)
+            => SendAsync<T>(HttpMethod.Get, endpoint, token: token, ct: ct);
+
+        /// <inheritdoc />
         public Task<(bool Success, T? Data, string? ErrorMessage)> PostAsync<T>(string endpoint, object body, CancellationToken ct = default)
             => SendAsync<T>(HttpMethod.Post, endpoint, body, ct: ct);
+
+        /// <inheritdoc />
+        public Task<(bool Success, T? Data, string? ErrorMessage)> PostAsync<T>(string endpoint, object body, string token, CancellationToken ct = default)
+            => SendAsync<T>(HttpMethod.Post, endpoint, body: body, token: token, ct: ct);
 
         /// <inheritdoc />
         public Task<(bool Success, T? Data, string? ErrorMessage)> PutAsync<T>(string endpoint, object body, CancellationToken ct = default)
@@ -58,11 +66,10 @@ namespace NockChat.Services.HTTP
             if (!networkService.IsOnline)
                 throw new InvalidOperationException(NetworkErrors.NoConnection);
 
-            var isPreSigned = requestUri.Contains("X-Amz-Signature", StringComparison.OrdinalIgnoreCase);
-            var url = Uri.IsWellFormedUriString(requestUri, UriKind.Absolute) ? requestUri : $"{_options.BaseUrl}{_options.StoragePath}{requestUri}";
+            var url = Uri.IsWellFormedUriString(requestUri, UriKind.Absolute) ? requestUri : $"{_options.BaseUrl}{requestUri}";
 
             using var request = new HttpRequestMessage(HttpMethod.Get, url);
-            await AddHeadersAsync(request, isPreSigned);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait(false);
 
@@ -73,8 +80,8 @@ namespace NockChat.Services.HTTP
         /// <summary>
         /// Единая точка отправки всех HTTP-запросов
         /// </summary>
-        private async Task<(bool Success, T? Data, string? ErrorMessage)> SendAsync<T>(HttpMethod method, string endpoint, object? body = null, HttpContent? httpContent = null,
-            CancellationToken ct = default)
+        private async Task<(bool Success, T? Data, string? ErrorMessage)> SendAsync<T>(HttpMethod method, string endpoint, object? body = null, 
+            HttpContent? httpContent = null, string? token = null, CancellationToken ct = default)
         {
             if (!networkService.IsOnline)
             {
@@ -84,8 +91,7 @@ namespace NockChat.Services.HTTP
 
             try
             {
-                using var request = BuildRequest(method, endpoint, body, httpContent);
-                await AddHeadersAsync(request);
+                using var request = BuildRequest(method, endpoint, body, httpContent, token);
 
                 using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait(false);
 
@@ -112,10 +118,13 @@ namespace NockChat.Services.HTTP
             }
         }
 
-        private HttpRequestMessage BuildRequest(HttpMethod method, string endpoint, object? body, HttpContent? httpContent)
+        private HttpRequestMessage BuildRequest(HttpMethod method, string endpoint, object? body, HttpContent? httpContent, string? token)
         {
             var request = new HttpRequestMessage(method, BuildUrl(endpoint));
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            if (!string.IsNullOrEmpty(token))
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             if (httpContent is not null)
                 request.Content = httpContent;
@@ -123,27 +132,6 @@ namespace NockChat.Services.HTTP
                 request.Content = SerializeToJson(body);
 
             return request;
-        }
-
-        private async Task AddHeadersAsync(HttpRequestMessage request, bool isPreSignedUrl = false)
-        {
-            if (isPreSignedUrl)
-                return;
-
-            /*            var token = await secureDataStorage.LoadBearerToken();
-                        if (!string.IsNullOrEmpty(token))
-                            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);*/
-
-            try
-            {
-                /*                var appId = await secureDataStorage.LoadDeviceID();
-                                if (!string.IsNullOrEmpty(appId))
-                                    request.Headers.TryAddWithoutValidation("X-App-Id", appId);*/
-            }
-            catch (Exception ex)
-            {
-                logger.LogWarning(ex, "Не удалось добавить заголовки устройства");
-            }
         }
 
         private async Task<(bool Success, T? Data, string? ErrorMessage)> ProcessResponseAsync<T>(HttpResponseMessage response, CancellationToken ct)
@@ -163,7 +151,7 @@ namespace NockChat.Services.HTTP
 
             try
             {
-                return (true, JsonConvert.DeserializeObject<T>(body), null);
+                return (true, JsonConvert.DeserializeObject<T>(body, SerializerSettings), null);
             }
             catch (JsonException ex)
             {

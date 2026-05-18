@@ -46,7 +46,7 @@ public partial class MainViewModel : ViewModelBase
     /// <summary>
     /// Команда для переключения на страницу личного кабинета
     /// </summary>
-    public RelayCommand RedirectionChatListCommand => new(async () => await _navigationService.RequestNavigation<HomeViewModel>());
+    public RelayCommand RedirectionChatListCommand => new(async () => await _navigationService.RequestNavigation<ChatListViewModel>());
     #endregion
 
     /// <summary>

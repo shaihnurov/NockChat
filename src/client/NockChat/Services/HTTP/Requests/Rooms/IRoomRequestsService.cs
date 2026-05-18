@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using NockChat.Models.Sessions;
 
-namespace NockChat.Services.HTTP.Requests
+namespace NockChat.Services.HTTP.Requests.Rooms
 {
     public interface IRoomRequestsService
     {

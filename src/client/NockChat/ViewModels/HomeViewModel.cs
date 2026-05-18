@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NockChat.Services.Attributes;
 using NockChat.Services.Common.Notifications;
-using NockChat.Services.HTTP.Requests;
+using NockChat.Services.HTTP.Requests.Rooms;
 
 namespace NockChat.ViewModels
 {

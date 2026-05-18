@@ -8,19 +8,23 @@
              xmlns:vm="using:NockChat.ViewModels"
              x:Class="NockChat.Views.MainView"
              x:DataType="vm:MainViewModel">
-    <Grid RowDefinitions="Auto * Auto">
-        <styles:ConstellationCanvas IsActive="{Binding AppUiState.HasConnection, Mode=OneWay}"
+    <Grid>
+        <styles:ConstellationCanvas IsActive="True"
                                    StarBrush="{DynamicResource ConstellationStarBrush}"
                                    HorizontalAlignment="Stretch" 
                                    VerticalAlignment="Stretch"
-                                   IsHitTestVisible="False"
-                                   Grid.RowSpan="3"/>
+                                   IsHitTestVisible="False"/>
 
-        <Image Source="/Assets/logo.ico" Width="200" Height="200" Grid.Row="0"/>
+        <ContentControl Content="{Binding CurrentPage, Mode=OneWay}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"/>
 
-        <ContentControl Grid.Row="1" Content="{Binding CurrentPage, Mode=OneWay}" />
+        <Image Source="/Assets/logo.ico" Width="150" Height="150"
+               VerticalAlignment="Top" HorizontalAlignment="Center"/>
 
-        <navigation:NavigationMenuView Grid.Row="2"
+        <navigation:NavigationMenuView VerticalAlignment="Bottom"
             IsVisible="{Binding AppUiState.IsActiveToggleMenu, Mode=OneWay}"/>
     </Grid>
 </UserControl>

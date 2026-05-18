@@ -1,0 +1,146 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="850"
+             x:Class="NockChat.Views.ChatView"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:models="using:NockChat.Models.Messages"
+             xmlns:vm="using:NockChat.ViewModels"
+             x:DataType="vm:ChatViewModel">
+
+    <Grid>
+        <!-- Список сообщений -->
+        <ScrollViewer x:Name="MessagesScroll"
+                      Padding="12 12 12 100"
+                      VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Messages}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="models:MessageModel">
+                        <Grid Margin="0 4">
+                            <!-- Чужое сообщение — слева -->
+                            <Border IsVisible="{Binding !IsOwn}"
+                                    HorizontalAlignment="Left"
+                                    MaxWidth="320"
+                                    Padding="12 8"
+                                    CornerRadius="4 12 12 12"
+                                    Background="{DynamicResource SukiCardBackground}">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="{Binding Username}"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource SukiPrimaryColor}"/>
+                                    <TextBlock Text="{Binding Text}"
+                                               TextWrapping="Wrap"
+                                               FontSize="14"/>
+                                    <TextBlock Text="{Binding SentAt, StringFormat='{}{0:HH:mm}'}"
+                                               FontSize="10"
+                                               HorizontalAlignment="Right"
+                                               Foreground="{DynamicResource SukiLowText}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Своё сообщение — справа -->
+                            <Border IsVisible="{Binding IsOwn}"
+                                    HorizontalAlignment="Right"
+                                    MaxWidth="320"
+                                    Padding="12 8"
+                                    CornerRadius="12 4 12 12"
+                                    Background="{DynamicResource SukiPrimaryColor}">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="{Binding Text}"
+                                               TextWrapping="Wrap"
+                                               FontSize="14"/>
+                                    <TextBlock Text="{Binding SentAt, StringFormat='{}{0:HH:mm}'}"
+                                               FontSize="10"
+                                               HorizontalAlignment="Right"
+                                               Opacity="0.7"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Индикатор подключения -->
+        <StackPanel IsVisible="{Binding IsConnecting}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12">
+            <ProgressBar IsIndeterminate="True" Width="200"/>
+            <TextBlock Text="Подключение..." HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- AccessCode popup -->
+        <Border IsVisible="{Binding IsAccessCodeVisible}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Margin="0 0 0 90"
+                Padding="16 10"
+                CornerRadius="12"
+                Background="{DynamicResource SukiCardBackground}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <avalonia:MaterialIcon Kind="Key" Width="16" Height="16"
+                                       Foreground="{DynamicResource SukiPrimaryColor}"/>
+                <TextBlock Text="AccessCode"
+                           FontFamily="Monospace"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Плавающий бар ввода -->
+        <Border VerticalAlignment="Bottom"
+                Margin="12 0 12 12"
+                Padding="8"
+                CornerRadius="16"
+                Background="{DynamicResource SukiCardBackground}">
+            <Grid ColumnDefinitions="Auto * Auto Auto">
+
+                <!-- Кнопка AccessCode -->
+                <Button Grid.Column="0"
+                        Command="{Binding ToggleAccessCodeCommand}"
+                        Background="Transparent"
+                        CornerRadius="12"
+                        Padding="8"
+                        ToolTip.Tip="Показать код комнаты">
+                    <avalonia:MaterialIcon Kind="Key" Width="20" Height="20"/>
+                </Button>
+
+                <!-- Поле ввода -->
+                <TextBox Grid.Column="1"
+                         Text="{Binding MessageText}"
+                         PlaceholderText="Написать сообщение..."
+                         AcceptsReturn="False"
+                         MaxLength="4000"
+                         VerticalAlignment="Center"
+                         BorderThickness="0"
+                         Background="Transparent">
+                    <TextBox.KeyBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding SendMessageCommand}"/>
+                    </TextBox.KeyBindings>
+                </TextBox>
+
+                <!-- Кнопка выхода -->
+                <Button Grid.Column="2"
+                        Command="{Binding LeaveRoomCommand}"
+                        Background="Transparent"
+                        CornerRadius="12"
+                        Padding="8"
+                        ToolTip.Tip="Покинуть комнату">
+                    <avalonia:MaterialIcon Kind="ExitToApp" Width="20" Height="20"/>
+                </Button>
+
+                <!-- Кнопка отправки -->
+                <Button Grid.Column="3"
+                        Command="{Binding SendMessageCommand}"
+                        CornerRadius="12"
+                        Padding="8"
+                        ToolTip.Tip="Отправить">
+                    <avalonia:MaterialIcon Kind="Send" Width="20" Height="20"/>
+                </Button>
+
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

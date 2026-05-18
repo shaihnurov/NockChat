@@ -23,7 +23,10 @@
     <PackageReference Include="Irihi.Ursa" />
     <PackageReference Include="Irihi.Ursa.Themes.Semi" />
     <PackageReference Include="Material.Icons.Avalonia" />
+    <PackageReference Include="Microsoft.AspNet.SignalR.Client" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
@@ -42,6 +45,12 @@
 
   <ItemGroup>
     <Folder Include="Services\Enums\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\ChatListView.axaml.cs">
+      <DependentUpon>ChatListView.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

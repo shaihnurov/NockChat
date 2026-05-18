@@ -5,7 +5,6 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="850"
              x:Class="NockChat.Views.HomeView"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:converters="using:NockChat.Services.Common.Converters"
              xmlns:u="https://irihi.tech/ursa"
              xmlns:vm="using:NockChat.ViewModels"
              x:DataType="vm:HomeViewModel">

@@ -37,20 +37,6 @@ namespace NockChat.Services.Common.Navigations
 
         /// <inheritdoc/>
         public async Task NavigateTo(Type viewModelType)
-            => await SetCurrentView(viewModelType);
-
-        /// <inheritdoc/>
-        public async Task NavigateTo(ViewModelBase viewModel)
-        {
-            Type viewModelType = viewModel.GetType();
-            await SetCurrentView(viewModelType);
-        }
-
-        /// <summary>
-        /// Навигационный метод
-        /// </summary>
-        /// <param name="viewModelType">Получает тип ViewModel</param>
-        private async Task SetCurrentView(Type viewModelType)
         {
             if (_currentViewModel != null)
             {
@@ -75,6 +61,34 @@ namespace NockChat.Services.Common.Navigations
 
             _currentViewModel = vm;
             PageChanged?.Invoke(vm);
+        }
+
+        /// <inheritdoc/>
+        public async Task NavigateTo(ViewModelBase viewModel)
+        {
+            Type viewModelType = viewModel.GetType();
+
+            if (_currentViewModel != null)
+            {
+                if (_currentViewModel is IEventCleaning cleaner)
+                    cleaner.CleanEvent();
+
+                if (ViewModelLifetimeRegistry.IsTransient(_currentViewModel.GetType()))
+                    if (_currentViewModel is IDisposable disposable)
+                        disposable.Dispose();
+            }
+
+            if (!_viewAttributeConfigs.TryGetValue(viewModelType, out var config))
+            {
+                config = viewModelType.GetCustomAttribute<ViewAttribute>() ?? new ViewAttribute(viewModelType.Name);
+                _viewAttributeConfigs[viewModelType] = config;
+            }
+
+            appUiState.TitlePage = config.Title;
+            await viewModel.Initialize();
+
+            _currentViewModel = viewModel;
+            PageChanged?.Invoke(viewModel);
         }
         #endregion
     }

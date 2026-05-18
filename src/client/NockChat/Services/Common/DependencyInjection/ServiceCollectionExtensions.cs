@@ -4,14 +4,18 @@ using NockChat.Services.Common.DataStorage.Sessions;
 using NockChat.Services.Common.DataStorage.Settings;
 using NockChat.Services.Common.Extensions.Debounce;
 using NockChat.Services.Common.Extensions.Navigations;
+using NockChat.Services.Common.Factory;
 using NockChat.Services.Common.Navigations;
 using NockChat.Services.Common.Notifications;
 using NockChat.Services.Common.UI;
 using NockChat.Services.HTTP;
 using NockChat.Services.HTTP.Network;
 using NockChat.Services.HTTP.Options;
-using NockChat.Services.HTTP.Requests;
+using NockChat.Services.HTTP.Requests.Messages;
+using NockChat.Services.HTTP.Requests.Rooms;
+using NockChat.Services.HTTP.SignalR;
 using NockChat.ViewModels;
+using NockChat.Views;
 
 namespace NockChat.Services.Common.DependencyInjection
 {
@@ -31,6 +35,7 @@ namespace NockChat.Services.Common.DependencyInjection
             services.AddSingleton<ISettingsService, SettingsService>();
             services.AddSingleton<ILocalSessionService, LocalSessionService>();
             services.AddSingleton<INetworkService, NetworkService>();
+            services.AddSingleton<ISignalRService, SignalRService>();
 
             return services;
         }
@@ -42,9 +47,12 @@ namespace NockChat.Services.Common.DependencyInjection
         {
             services.AddTransient<IDebounceDispatcher, DebounceDispatcher>();
             services.AddTransient<IRoomRequestsService, RoomRequestsService>();
+            services.AddTransient<IMessageRequestsService, MessageRequestsService>();
+            services.AddTransient(typeof(IViewModelFactory<>), typeof(ViewModelFactory<>));
 
             services.AddViewModel<MainViewModel>(ServiceLifetime.Transient);
             services.AddViewModel<HomeViewModel>(ServiceLifetime.Transient);
+            services.AddViewModel<ChatListViewModel>(ServiceLifetime.Transient);
 
             return services;
         }

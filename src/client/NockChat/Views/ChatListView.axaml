@@ -1,0 +1,62 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="850"
+             x:Class="NockChat.Views.ChatListView"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:models="using:NockChat.Models.Sessions"
+             xmlns:u="https://irihi.tech/ursa"
+             xmlns:vm="using:NockChat.ViewModels"
+             x:DataType="vm:ChatListViewModel">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid RowDefinitions="Auto *" RowSpacing="15" VerticalAlignment="Center">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                <avalonia:MaterialIcon Width="30" Height="30" Kind="AbjadHebrew"
+                        Foreground="{DynamicResource SukiPrimaryColor}"/>
+                <TextBlock Text="Список ваших комнат" VerticalAlignment="Center" FontSize="20"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Spacing="15">
+                <Separator Width="250"/>
+
+                <u:UrsaGroupBox Header="Выберите комнату" HeaderSpacing="12"
+                                HorizontalAlignment="Center">
+                        <StackPanel>
+                            <TextBlock Text="У вас пока нет комнат"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource SukiLowText}"
+                                       IsVisible="{Binding !Rooms.Count}"/>
+
+                            <ItemsControl ItemsSource="{Binding Rooms}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="models:RoomSession">
+                                        <Border Margin="10" BorderThickness="1"
+                                                CornerRadius="8" BorderBrush="{DynamicResource SemiGrey9}">
+                                            <Button CommandParameter="{Binding}" Background="Transparent"
+                                                    Command="{Binding $parent[ItemsControl].((vm:ChatListViewModel)DataContext).OpenRoomCommand}">
+                                                <StackPanel Spacing="4" Cursor="Hand">
+                                                    <TextBlock Text="{Binding RoomName}"
+                                                                FontSize="16"
+                                                                FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Username}"
+                                                                FontSize="14" Classes="Secondary"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                </u:UrsaGroupBox>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

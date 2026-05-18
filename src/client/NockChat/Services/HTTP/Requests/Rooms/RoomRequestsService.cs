@@ -6,7 +6,7 @@ using NockChat.Models.Sessions;
 using NockChat.Services.Common.DataStorage.Sessions;
 using NockChat.ViewModels;
 
-namespace NockChat.Services.HTTP.Requests
+namespace NockChat.Services.HTTP.Requests.Rooms
 {
     public class RoomRequestsService(ILogger<HomeViewModel> logger, IHttpService httpService, ILocalSessionService sessionService) : IRoomRequestsService
     {
