@@ -5,14 +5,16 @@ using NockChat.Application.Messages.Commands.SendMessage;
 
 namespace NockChat.Infrastructure.Hubs
 {
-    public class ChatHub(IMediator mediator) : Hub<IChatHubClient>
+    public class ChatHub(IMediator mediator, ITokenService tokenService) : Hub<IChatHubClient>
     {
-        public async Task JoinRoom(int roomId, int chatUserId)
+        public async Task JoinRoom(string token)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString());
+            var (chatUserId, roomId) = tokenService.ValidateToken(token) ?? throw new HubException("Недействительный токен");
 
-            var username = Context.Items["username"]?.ToString() ?? "Unknown";
-            await Clients.OthersInGroup(roomId.ToString()).UserJoined(username);
+            Context.Items["chatUserId"] = chatUserId;
+            Context.Items["roomId"] = roomId;
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString());
         }
 
         public async Task LeaveRoom(int roomId)
@@ -23,8 +25,10 @@ namespace NockChat.Infrastructure.Hubs
             await Clients.OthersInGroup(roomId.ToString()).UserLeft(username);
         }
 
-        public async Task SendMessage(int roomId, int chatUserId, string text)
+        public async Task SendMessage(string token, string text)
         {
+            var (chatUserId, roomId) = tokenService.ValidateToken(token) ?? throw new HubException("Недействительный токен");
+
             await mediator.Send(new SendMessageCommand(roomId, chatUserId, text));
         }
 

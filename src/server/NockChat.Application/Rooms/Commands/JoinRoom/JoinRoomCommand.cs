@@ -8,11 +8,12 @@ namespace NockChat.Application.Rooms.Commands.JoinRoom
 {
     public record JoinRoomCommand(string AccessCode, string Username) : IRequest<JoinRoomResponse>;
 
-    public class JoinRoomCommandHandler(IRoomRepository roomRepository, IChatUserRepository chatUserRepository) : IRequestHandler<JoinRoomCommand, JoinRoomResponse>
+    public class JoinRoomCommandHandler(IRoomRepository roomRepository, IChatUserRepository chatUserRepository, 
+        ITokenService tokenService) : IRequestHandler<JoinRoomCommand, JoinRoomResponse>
     {
         public async Task<JoinRoomResponse> Handle(JoinRoomCommand request, CancellationToken ct)
         {
-            var room = await roomRepository.GetByAccessCodeAsync(request.AccessCode, ct) ?? throw new NotFoundException($"Комната с кодом {request.AccessCode} не найдена");
+            var room = await roomRepository.GetByAccessCodeAsync(request.AccessCode, ct) ?? throw new NotFoundException($"Комната не найдена");
 
             var userExists = await chatUserRepository.ExistsAsync(room.Id, request.Username, ct);
             if (userExists)
@@ -27,7 +28,9 @@ namespace NockChat.Application.Rooms.Commands.JoinRoom
 
             var created = await chatUserRepository.CreateAsync(chatUser, ct);
 
-            return new JoinRoomResponse(room.Id, room.Name, created.Id, created.Username);
+            var token = tokenService.GenerateToken(created.Id, room.Id, room.Name, created.Username);
+
+            return new JoinRoomResponse(room.Name, created.Username, token);
         }
     }
 }

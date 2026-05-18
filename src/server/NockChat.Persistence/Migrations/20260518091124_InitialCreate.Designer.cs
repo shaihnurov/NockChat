@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NockChat.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260517081450_InitialCreate")]
+    [Migration("20260518091124_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

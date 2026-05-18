@@ -1,4 +1,4 @@
 ﻿namespace NockChat.Application.DTOs.Responses
 {
-    public record JoinRoomResponse(int RoomId, string RoomName, int ChatUserId, string Username);
+    public record JoinRoomResponse(string RoomName, string Username, string Token);
 }
