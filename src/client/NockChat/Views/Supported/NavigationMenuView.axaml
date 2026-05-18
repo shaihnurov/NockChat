@@ -27,9 +27,9 @@
                 </Button>
 
                 <Button Theme="{DynamicResource BorderlessButton}" Classes="Tertiary"
-                        Padding="5" Command="{Binding RedirectionUserProfileCommand}"> 
+                        Padding="5" Command="{Binding RedirectionChatListCommand}"> 
                     <PathIcon Theme="{DynamicResource InnerPathIcon}" Classes="ExtraLarge"
-                              Data="{StaticResource SemiIconUser}"/>
+                              Data="{StaticResource SemiIconComment}"/>
                 </Button>
 
                 <Button Theme="{DynamicResource BorderlessButton}" Classes="Tertiary"

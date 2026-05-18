@@ -26,9 +26,12 @@
                             HorizontalAlignment="Center" MaxWidth="400">
                 <StackPanel Spacing="8">
                     <TextBox Classes="Large Clearable" PlaceholderText="Мой чат"
-                                u:FormItem.Label="Название комнаты"
                                 u:FormItem.IsRequired="True" 
                                 Text="{Binding RoomName, Mode=TwoWay}"/>
+
+                    <TextBox Classes="Large Clearable" PlaceholderText="Ваше имя в чате"
+                                u:FormItem.IsRequired="True" 
+                                Text="{Binding UserName, Mode=TwoWay}"/>
 
 		            <u:IconButton Icon="{DynamicResource SemiIconKeyStroked}" 
                         Content="Создать комнату" Command="{Binding GeneratedChatRoomCommand}"

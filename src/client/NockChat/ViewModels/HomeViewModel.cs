@@ -20,9 +20,19 @@ namespace NockChat.ViewModels
                 AddError(nameof(RoomName), "Название комнаты обязательно для заполнения");
         }
 
+        [ObservableProperty]
+        public partial string? UserName { get; set; }
+        partial void OnUserNameChanged(string? value)
+        {
+            ClearErrors(nameof(UserName));
+            if (string.IsNullOrWhiteSpace(value))
+                AddError(nameof(UserName), "Имя пользователя обязательно для заполнения");
+        }
+
         private bool ValidateAll()
         {
             OnRoomNameChanged(RoomName);
+            OnUserNameChanged(UserName);
 
             return !HasErrors;
         }
@@ -37,9 +47,9 @@ namespace NockChat.ViewModels
                 return;
             }
 
-            var room = await roomRequests.CreateRoom(RoomName!, default);
+            var room = await roomRequests.CreateRoom(RoomName!, UserName!, default);
             if (room != null)
-                notificationService.ShowMessage($"Создана новая чат-комната: {room.Id}, {room.Name}, {room.CreatedAt}", NotificationType.Success);
+                notificationService.ShowMessage($"Создана новая чат-комната: {room.RoomName}, {room.JoinedAt}", NotificationType.Success);
         }
     }
 }

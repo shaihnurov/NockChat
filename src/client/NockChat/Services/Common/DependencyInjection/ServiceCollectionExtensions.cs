@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NockChat.Services.Common.DataStorage.Sessions;
 using NockChat.Services.Common.DataStorage.Settings;
 using NockChat.Services.Common.Extensions.Debounce;
 using NockChat.Services.Common.Extensions.Navigations;
@@ -28,6 +29,7 @@ namespace NockChat.Services.Common.DependencyInjection
             services.AddSingleton<INotificationService, NotificationService>();
             services.AddSingleton<IAppUiState, AppUiState>();
             services.AddSingleton<ISettingsService, SettingsService>();
+            services.AddSingleton<ILocalSessionService, LocalSessionService>();
             services.AddSingleton<INetworkService, NetworkService>();
 
             return services;

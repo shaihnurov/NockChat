@@ -1,11 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using NockChat.Models.Rooms;
+using NockChat.Models.Sessions;
 
 namespace NockChat.Services.HTTP.Requests
 {
     public interface IRoomRequestsService
     {
-        Task<RoomModel?> CreateRoom(string roomName, CancellationToken ct);
+        Task<RoomSession?> CreateRoom(string roomName, string userName, CancellationToken ct);
+        Task<RoomSession?> JoinRoom(string accessCode, string userName, CancellationToken ct);
     }
 }

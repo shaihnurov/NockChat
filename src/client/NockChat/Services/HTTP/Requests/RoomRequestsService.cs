@@ -1,30 +1,57 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using NockChat.Models.Rooms;
+using NockChat.Models.Sessions;
+using NockChat.Services.Common.DataStorage.Sessions;
 using NockChat.ViewModels;
 
 namespace NockChat.Services.HTTP.Requests
 {
-    public class RoomRequestsService(ILogger<HomeViewModel> logger, IHttpService httpService) : IRoomRequestsService
+    public class RoomRequestsService(ILogger<HomeViewModel> logger, IHttpService httpService, ILocalSessionService sessionService) : IRoomRequestsService
     {
-        public async Task<RoomModel?> CreateRoom(string roomName, CancellationToken ct)
+        public async Task<RoomSession?> CreateRoom(string roomName, string userName, CancellationToken ct)
         {
-            var (success, response, error) = await httpService.PostAsync<RoomModel>("/api/v1/rooms", new { Name = roomName }, ct);
+            var (success, response, error) = await httpService.PostAsync<RoomSession>("/api/v1/rooms", new { Name = roomName, UserName = userName }, ct);
 
-            if (!success)
+            if (!success || response == null)
             {
-                logger.LogWarning("Возникла ошибка при создании комнаты: {Error}", error);
+                logger.LogWarning("Ошибка при создании комнаты: {Error}", error);
                 return null;
             }
 
-            if (response == null)
+            var session = new RoomSession
             {
-                logger.LogWarning("Не удалось получить информацию о комнате");
+                Token = response.Token,
+                RoomName = response.RoomName,
+                Username = response.Username,
+                JoinedAt = DateTime.UtcNow
+            };
+
+            await sessionService.SaveAsync(session, ct);
+            return session;
+        }
+
+        public async Task<RoomSession?> JoinRoom(string accessCode, string userName, CancellationToken ct)
+        {
+            var (success, response, error) = await httpService.PostAsync<RoomSession>("/api/v1/rooms/join", new { AccessCode = accessCode, UserName = userName }, ct);
+
+            if (!success || response == null)
+            {
+                logger.LogWarning("Ошибка при входе в комнату: {Error}", error);
                 return null;
             }
 
-            return response;
+            var session = new RoomSession
+            {
+                Token = response.Token,
+                RoomName = response.RoomName,
+                Username = response.Username,
+                JoinedAt = DateTime.UtcNow
+            };
+
+            await sessionService.SaveAsync(session, ct);
+            return session;
         }
     }
 }
