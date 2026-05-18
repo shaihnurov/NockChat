@@ -1,6 +1,9 @@
+using NockChat.Api.Exceptions;
 using NockChat.Api.Extensions;
 using NockChat.Application.Extensions;
 using NockChat.Persistence.Extensions;
+using NockChat.Infrastructure.Extensions;
+using NockChat.Infrastructure.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,8 +11,11 @@ builder.AddLogging();
 
 builder.Services.AddVersioning();
 builder.Services.AddRateLimiting();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Services.AddApplication();
 builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddInfrastructure();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
@@ -20,6 +26,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRateLimiter();
+app.UseExceptionHandler();
 app.MapControllers();
+
+app.MapHub<ChatHub>("/hubs/chat");
 
 await app.RunAsync();

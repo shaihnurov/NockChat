@@ -13,6 +13,8 @@ namespace NockChat.Persistence.Extensions
             services.AddDbContext<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IRoomRepository, RoomRepository>();
+            services.AddScoped<IChatUserRepository, ChatUserRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
 
             return services;
         }

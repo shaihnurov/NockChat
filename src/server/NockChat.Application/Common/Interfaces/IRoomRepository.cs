@@ -5,5 +5,6 @@ namespace NockChat.Application.Common.Interfaces
     public interface IRoomRepository
     {
         Task<Room> CreateAsync(Room room, CancellationToken ct = default);
+        Task<Room?> GetByAccessCodeAsync(string accessCode, CancellationToken ct = default);
     }
 }
