@@ -22,10 +22,20 @@
         <StackPanel Grid.Row="1" Spacing="15">
             <Separator Width="250"/>
 
-		    <u:IconButton Icon="{DynamicResource SemiIconKeyStroked}" 
-                Content="Создать комнату" Command="{Binding GeneratedChatRoomCommand}"
-                Classes="Colorful Primary" 
-                Theme="{DynamicResource OutlineIconButton}" />
+            <u:UrsaGroupBox Header="Создание" HeaderSpacing="12"
+                            HorizontalAlignment="Center" MaxWidth="400">
+                <StackPanel Spacing="8">
+                    <TextBox Classes="Large Clearable" PlaceholderText="Мой чат"
+                                u:FormItem.Label="Название комнаты"
+                                u:FormItem.IsRequired="True" 
+                                Text="{Binding RoomName, Mode=TwoWay}"/>
+
+		            <u:IconButton Icon="{DynamicResource SemiIconKeyStroked}" 
+                        Content="Создать комнату" Command="{Binding GeneratedChatRoomCommand}"
+                        Classes="Colorful Primary" 
+                        Theme="{DynamicResource OutlineIconButton}" />
+                </StackPanel>
+            </u:UrsaGroupBox>
         </StackPanel>
     </Grid>
 </UserControl>

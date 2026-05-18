@@ -9,6 +9,7 @@ using NockChat.Services.Common.UI;
 using NockChat.Services.HTTP;
 using NockChat.Services.HTTP.Network;
 using NockChat.Services.HTTP.Options;
+using NockChat.Services.HTTP.Requests;
 using NockChat.ViewModels;
 
 namespace NockChat.Services.Common.DependencyInjection
@@ -38,6 +39,7 @@ namespace NockChat.Services.Common.DependencyInjection
         public static IServiceCollection AddTransientServices(this IServiceCollection services)
         {
             services.AddTransient<IDebounceDispatcher, DebounceDispatcher>();
+            services.AddTransient<IRoomRequestsService, RoomRequestsService>();
 
             services.AddViewModel<MainViewModel>(ServiceLifetime.Transient);
             services.AddViewModel<HomeViewModel>(ServiceLifetime.Transient);
