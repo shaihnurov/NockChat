@@ -9,53 +9,51 @@
              xmlns:vm="using:NockChat.ViewModels"
              x:DataType="vm:ChatViewModel">
 
-    <Grid>
-        <!-- Список сообщений -->
-        <ScrollViewer x:Name="MessagesScroll"
-                      Padding="12 12 12 100"
-                      VerticalScrollBarVisibility="Auto">
+    <Grid Margin="0 40 0 0">
+        <ScrollViewer x:Name="MessagesScroll" Padding="12 0 12 0" VerticalScrollBarVisibility="Auto"
+                      Margin="0 0 0 70">
             <ItemsControl ItemsSource="{Binding Messages}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:MessageModel">
-                        <Grid Margin="0 4">
-                            <!-- Чужое сообщение — слева -->
+                        <Grid Margin="0 10">
                             <Border IsVisible="{Binding !IsOwn}"
                                     HorizontalAlignment="Left"
                                     MaxWidth="320"
                                     Padding="12 8"
-                                    CornerRadius="4 12 12 12"
-                                    Background="{DynamicResource SukiCardBackground}">
-                                <StackPanel Spacing="4">
+                                    CornerRadius="15 15 15 0"
+                                    Background="{DynamicResource SemiGrey1}">
+                                <Grid RowDefinitions="Auto * Auto" ColumnDefinitions="* Auto" 
+                                      ColumnSpacing="25">
                                     <TextBlock Text="{Binding Username}"
-                                               FontSize="11"
+                                               Grid.Row="0" Grid.Column="0" FontSize="14"
                                                FontWeight="SemiBold"
-                                               Foreground="{DynamicResource SukiPrimaryColor}"/>
+                                               Foreground="{DynamicResource SemiAIGeneral4}"/>
                                     <TextBlock Text="{Binding Text}"
-                                               TextWrapping="Wrap"
-                                               FontSize="14"/>
+                                               Grid.Row="1" Grid.Column="0"
+                                               TextWrapping="Wrap" FontSize="16"
+                                               Foreground="{DynamicResource SemiColorText0}"/>
                                     <TextBlock Text="{Binding SentAt, StringFormat='{}{0:HH:mm}'}"
-                                               FontSize="10"
-                                               HorizontalAlignment="Right"
-                                               Foreground="{DynamicResource SukiLowText}"/>
-                                </StackPanel>
+                                               Grid.Row="2" Grid.Column="1" FontSize="10" Margin="0 -8"
+                                               Foreground="{DynamicResource SemiAIGeneral7}"/>
+                                </Grid>
                             </Border>
 
-                            <!-- Своё сообщение — справа -->
                             <Border IsVisible="{Binding IsOwn}"
                                     HorizontalAlignment="Right"
                                     MaxWidth="320"
                                     Padding="12 8"
-                                    CornerRadius="12 4 12 12"
-                                    Background="{DynamicResource SukiPrimaryColor}">
-                                <StackPanel Spacing="4">
+                                    CornerRadius="15 15 0 15"
+                                    Background="{DynamicResource SemiGrey1}">
+                                <Grid RowDefinitions="* Auto" ColumnDefinitions="* Auto" 
+                                      ColumnSpacing="25">
                                     <TextBlock Text="{Binding Text}"
-                                               TextWrapping="Wrap"
-                                               FontSize="14"/>
+                                               Grid.Row="0" Grid.Column="0"
+                                               TextWrapping="Wrap" FontSize="16"
+                                               Foreground="{DynamicResource SemiColorText0}"/>
                                     <TextBlock Text="{Binding SentAt, StringFormat='{}{0:HH:mm}'}"
-                                               FontSize="10"
-                                               HorizontalAlignment="Right"
-                                               Opacity="0.7"/>
-                                </StackPanel>
+                                               Grid.Row="1" Grid.Column="1" FontSize="10" Margin="0 -8"
+                                               Foreground="{DynamicResource SemiAIGeneral7}"/>
+                                </Grid>
                             </Border>
                         </Grid>
                     </DataTemplate>
@@ -90,11 +88,9 @@
         </Border>
 
         <!-- Плавающий бар ввода -->
-        <Border VerticalAlignment="Bottom"
-                Margin="12 0 12 12"
-                Padding="8"
-                CornerRadius="16"
-                Background="{DynamicResource SukiCardBackground}">
+        <Border VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                Margin="12 0 12 12" Padding="8" CornerRadius="16"
+                Background="{DynamicResource SemiGrey1}">
             <Grid ColumnDefinitions="Auto * Auto Auto">
 
                 <!-- Кнопка AccessCode -->

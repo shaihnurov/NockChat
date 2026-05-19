@@ -21,10 +21,10 @@
         <StackPanel Grid.Row="1" Spacing="15">
             <Separator Width="250"/>
 
-            <u:UrsaGroupBox Header="Создание" HeaderSpacing="12"
+            <u:UrsaGroupBox Header="Комната" HeaderSpacing="12"
                             HorizontalAlignment="Center" MaxWidth="400">
                 <StackPanel Spacing="8">
-                    <TextBox Classes="Large Clearable" PlaceholderText="Мой чат"
+                    <TextBox Classes="Large Clearable" PlaceholderText="Название чата"
                                 u:FormItem.IsRequired="True" 
                                 Text="{Binding RoomName, Mode=TwoWay}"/>
 
@@ -34,6 +34,18 @@
 
 		            <u:IconButton Icon="{DynamicResource SemiIconKeyStroked}" 
                         Content="Создать комнату" Command="{Binding GeneratedChatRoomCommand}"
+                        Classes="Colorful Primary" 
+                        Theme="{DynamicResource OutlineIconButton}" />
+
+                    <TextBlock Text="или" HorizontalAlignment="Center"
+                               FontSize="12"/>
+
+                    <TextBox Classes="Large Clearable" PlaceholderText="Код доступа"
+                                u:FormItem.IsRequired="True" 
+                                Text="{Binding AccessCode, Mode=TwoWay}"/>
+
+		            <u:IconButton Icon="{DynamicResource SemiIconForwardStroked}" 
+                        Content="Присоедениться к комнате" Command="{Binding JoinChatRoomCommand}"
                         Classes="Colorful Primary" 
                         Theme="{DynamicResource OutlineIconButton}" />
                 </StackPanel>

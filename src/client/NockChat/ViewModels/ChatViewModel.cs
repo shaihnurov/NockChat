@@ -32,7 +32,7 @@ namespace NockChat.ViewModels
         public string RoomName => session.RoomName;
         public string Username => session.Username;
 
-        public async Task InitializeAsync(CancellationToken ct = default)
+        public override async Task Initialize()
         {
             try
             {
@@ -40,13 +40,19 @@ namespace NockChat.ViewModels
                 IsConnecting = true;
 
                 // Загружаем историю
-                var history = await messageService.GetMessagesAsync(session.Token, ct: ct);
-                if (history != null)
-                    Messages = new ObservableCollection<MessageModel>(history);
+                var result = await messageService.GetMessagesAsync(session.Token, 1, 100);
+                if (result != null)
+                    Messages = new ObservableCollection<MessageModel>(result.Items);
 
                 // Подключаемся к SignalR
-                await signalRService.ConnectAsync(session.Token, ct);
-                signalRService.OnMessageReceived(msg => Messages.Add(msg));
+                await signalRService.ConnectAsync(session.Token);
+                signalRService.OnMessageReceived(msg =>
+                {
+                    if (msg.Username == session.Username)
+                        return;
+
+                    Messages.Add(msg);
+                });
 
                 IsConnecting = false;
             }
@@ -59,10 +65,32 @@ namespace NockChat.ViewModels
         [RelayCommand]
         private async Task SendMessage()
         {
-            if (string.IsNullOrWhiteSpace(MessageText)) return;
+            if (string.IsNullOrWhiteSpace(MessageText))
+                return;
 
-            await signalRService.SendMessageAsync(MessageText);
+            var text = MessageText;
             MessageText = string.Empty;
+
+            var optimisticMessage = new MessageModel
+            {
+                Text = text,
+                Username = session.Username,
+                SentAt = DateTime.UtcNow,
+                IsOwn = true
+            };
+
+            Messages.Add(optimisticMessage);
+
+            try
+            {
+                await signalRService.SendMessageAsync(text);
+            }
+            catch (Exception)
+            {
+                Messages.Remove(optimisticMessage);
+                MessageText = text;
+                notificationService.ShowError("Не удалось отправить сообщение");
+            }
         }
 
         [RelayCommand]

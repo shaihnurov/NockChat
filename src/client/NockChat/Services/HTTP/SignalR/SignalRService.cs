@@ -11,25 +11,26 @@ namespace NockChat.Services.HTTP.SignalR
     public class SignalRService(ILogger<SignalRService> logger, IConfiguration configuration) : ISignalRService, IAsyncDisposable
     {
         private HubConnection? _connection;
-        private readonly string _hubUrl = configuration["Api:HubUrl"]!;
+        private readonly string _hubUrl = configuration["HttpService:HubUrl"]!;
+
+        private string? _activeToken;
+
         public bool IsConnected => _connection?.State == HubConnectionState.Connected;
 
         public async Task ConnectAsync(string token, CancellationToken ct = default)
         {
+            _activeToken = token;
+
             if (_connection != null)
                 await DisconnectAsync(ct);
 
-            _connection = new HubConnectionBuilder()
-                .WithUrl($"{_hubUrl}?access_token={token}")
-                .WithAutomaticReconnect()
-                .Build();
+            _connection = new HubConnectionBuilder().WithUrl($"{_hubUrl}?access_token={token}").WithAutomaticReconnect().Build();
 
             RegisterHandlers();
 
             try
             {
                 await _connection.StartAsync(ct);
-                await _connection.InvokeAsync("JoinRoom", token, ct);
                 logger.LogInformation("Connected to SignalR hub.");
             }
             catch (Exception ex)
@@ -63,6 +64,9 @@ namespace NockChat.Services.HTTP.SignalR
         {
             if (_connection == null || !IsConnected)
                 throw new InvalidOperationException("No connection to SignalR hub.");
+
+            if (string.IsNullOrEmpty(_activeToken))
+                throw new InvalidOperationException("Token is missing. Call ConnectAsync first.");
 
             await _connection.InvokeAsync("SendMessage", text, ct);
         }

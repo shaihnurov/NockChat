@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -16,6 +17,7 @@ using NockChat.Services.Common.Extensions.Logger;
 using NockChat.Services.Common.Navigations;
 using NockChat.Services.Common.Notifications;
 using NockChat.Services.Common.UI;
+using NockChat.Services.HTTP.SignalR;
 using NockChat.ViewModels;
 using NockChat.Views;
 using Serilog;
@@ -147,7 +149,14 @@ public partial class App : Application
 
         try
         {
+            var signalRService = _host.Services.GetService<ISignalRService>();
+            if (signalRService != null)
+            {
+                await signalRService.DisconnectAsync(CancellationToken.None);
+                _logger?.LogInformation("SignalR disconnected successfully.");
+            }
 
+            await _host.StopAsync(CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -155,9 +164,8 @@ public partial class App : Application
         }
         finally
         {
-            await _host.StopAsync();
-            desktop.Shutdown();
             _host.Dispose();
+            desktop.Shutdown();
         }
     }
 
