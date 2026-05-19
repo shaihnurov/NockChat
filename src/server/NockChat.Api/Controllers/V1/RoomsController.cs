@@ -34,9 +34,6 @@ namespace NockChat.Api.Controllers.V1
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> JoinRoom([FromBody] JoinRoomRequest request, CancellationToken ct)
-        {
-            var result = await mediator.Send(new JoinRoomCommand(request.AccessCode, request.Username), ct);
-            return Ok(result);
-        }
+            => Ok(await mediator.Send(new JoinRoomCommand(request.AccessCode, request.Username), ct));
     }
 }

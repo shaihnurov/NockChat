@@ -14,6 +14,7 @@ namespace NockChat.Api.Exceptions
                 ValidationException => (LogLevel.Warning, StatusCodes.Status400BadRequest, "Ошибка валидации"),
                 NotFoundException => (LogLevel.Warning, StatusCodes.Status404NotFound, "Ресурс не найден"),
                 ConflictException => (LogLevel.Warning, StatusCodes.Status409Conflict, "Конфликт данных"),
+                ForbiddenException => (LogLevel.Warning, StatusCodes.Status403Forbidden, "Доступ запрещен"),
                 _ => (LogLevel.Error, StatusCodes.Status500InternalServerError, "Внутренняя ошибка сервера")
             };
 

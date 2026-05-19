@@ -29,11 +29,10 @@ namespace NockChat.Application.Messages.Commands.SendMessage
             };
 
             var created = await messageRepository.CreateAsync(message, ct);
-
             var response = (created, chatUser.Username).Adapt<MessageResponse>(mapper.Config);
 
             await chatNotification.SendMessageAsync(request.RoomId, response, ct);
-            return response;
+            return response with { IsOwn = true };
         }
     }
 }

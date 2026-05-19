@@ -7,7 +7,7 @@ namespace NockChat.Persistence.Repositories
     public class ChatUserRepository(AppDbContext db) : IChatUserRepository
     {
         public async Task<bool> ExistsAsync(int roomId, string username, CancellationToken ct = default)
-            => await db.ChatUsers.AnyAsync(u => u.RoomId == roomId && u.Username == username, ct);
+            => await db.ChatUsers.AsNoTracking().AnyAsync(u => u.RoomId == roomId && u.Username == username, ct);
 
         public async Task<ChatUser> CreateAsync(ChatUser chatUser, CancellationToken ct = default)
         {

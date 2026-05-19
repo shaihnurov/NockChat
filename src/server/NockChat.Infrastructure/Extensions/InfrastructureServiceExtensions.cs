@@ -15,6 +15,7 @@ namespace NockChat.Infrastructure.Extensions
             services.AddSignalR();
             services.AddTransient<ITokenService, TokenService>();
             services.AddScoped<IChatNotificationService, ChatNotificationService>();
+            services.AddScoped<IUserContext, UserContext>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -23,19 +24,22 @@ namespace NockChat.Infrastructure.Extensions
                     {
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Secret"]!)),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
+                        ValidateIssuer = true,
+                        ValidIssuer = configuration["Jwt:Issuer"],
+                        ValidateAudience = true,
+                        ValidAudience = configuration["Jwt:Audience"],
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero
                     };
 
                     options.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context =>
                         {
-                            var token = context.Request.Query["access_token"];
-                            var path = context.HttpContext.Request.Path;
-
-                            if (!string.IsNullOrEmpty(token) && path.StartsWithSegments("/hubs/chat"))
-                                context.Token = token;
+                            var accessToken = context.Request.Query["access_token"];
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                                context.Token = accessToken;
 
                             return Task.CompletedTask;
                         }

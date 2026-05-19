@@ -10,6 +10,8 @@ namespace NockChat.Persistence.Configurations
         {
             builder.HasKey(m => m.Id);
 
+            builder.HasIndex(m => new { m.RoomId, m.SentAt });
+
             builder.Property(m => m.Text)
                 .IsRequired()
                 .HasMaxLength(4000);

@@ -1,40 +1,32 @@
-﻿using MediatR;
+﻿using System.Security.Claims;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using NockChat.Application.Common.Interfaces;
 using NockChat.Application.Messages.Commands.SendMessage;
 
 namespace NockChat.Infrastructure.Hubs
 {
-    public class ChatHub(IMediator mediator, ITokenService tokenService) : Hub<IChatHubClient>
+    [Authorize]
+    public class ChatHub(IMediator mediator) : Hub<IChatHubClient>
     {
-        public async Task JoinRoom(string token)
+        private int ChatUserId => int.Parse(Context.User!.FindFirstValue("chatUserId")!);
+        private int RoomId => int.Parse(Context.User!.FindFirstValue("roomId")!);
+        private string Username => Context.User!.FindFirstValue("username") ?? "Unknown";
+
+        public override async Task OnConnectedAsync()
         {
-            var (chatUserId, roomId) = tokenService.ValidateToken(token) ?? throw new HubException("Недействительный токен");
-
-            Context.Items["chatUserId"] = chatUserId;
-            Context.Items["roomId"] = roomId;
-
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString());
-        }
-
-        public async Task LeaveRoom(int roomId)
-        {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomId.ToString());
-
-            var username = Context.Items["username"]?.ToString() ?? "Unknown";
-            await Clients.OthersInGroup(roomId.ToString()).UserLeft(username);
-        }
-
-        public async Task SendMessage(string token, string text)
-        {
-            var (chatUserId, roomId) = tokenService.ValidateToken(token) ?? throw new HubException("Недействительный токен");
-
-            await mediator.Send(new SendMessageCommand(roomId, chatUserId, text));
+            await Groups.AddToGroupAsync(Context.ConnectionId, RoomId.ToString());
+            await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
+            await Clients.OthersInGroup(RoomId.ToString()).UserLeft(Username);
             await base.OnDisconnectedAsync(exception);
         }
+
+        public async Task SendMessage(string text)
+            => await mediator.Send(new SendMessageCommand(RoomId, ChatUserId, text));
     }
 }

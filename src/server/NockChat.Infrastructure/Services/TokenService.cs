@@ -22,36 +22,14 @@ namespace NockChat.Infrastructure.Services
                 new Claim("username", username)
             };
 
-            var token = new JwtSecurityToken(claims: claims, expires: DateTime.UtcNow.AddDays(30), signingCredentials: credentials);
+            var token = new JwtSecurityToken(
+                issuer: configuration["Jwt:Issuer"],
+                audience: configuration["Jwt:Audience"],
+                claims: claims, 
+                expires: DateTime.UtcNow.AddDays(30), 
+                signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public (int chatUserId, int roomId)? ValidateToken(string token)
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Secret"]!));
-
-            try
-            {
-                var handler = new JwtSecurityTokenHandler();
-                handler.ValidateToken(token, new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = key,
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                }, out var validatedToken);
-
-                var jwt = (JwtSecurityToken)validatedToken;
-                var chatUserId = int.Parse(jwt.Claims.First(c => c.Type == "chatUserId").Value);
-                var roomId = int.Parse(jwt.Claims.First(c => c.Type == "roomId").Value);
-
-                return (chatUserId, roomId);
-            }
-            catch
-            {
-                return null;
-            }
         }
     }
 }

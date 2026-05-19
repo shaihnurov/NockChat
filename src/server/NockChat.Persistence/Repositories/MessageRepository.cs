@@ -13,8 +13,24 @@ namespace NockChat.Persistence.Repositories
             return message;
         }
 
-        public async Task<List<Message>> GetByRoomAsync(int roomId, int page, int pageSize, CancellationToken ct = default)
-            => await db.Messages.Where(m => m.RoomId == roomId).Include(m => m.ChatUser).OrderByDescending(m => m.SentAt).Skip((page - 1) * pageSize)
-                .Take(pageSize).ToListAsync(ct);
+        public async Task<(List<Message> Messages, int TotalCount)> GetByRoomAsync(int roomId, int page, int pageSize, CancellationToken ct = default)
+        {
+            var query = db.Messages.Where(m => m.RoomId == roomId);
+            var totalCount = await query.CountAsync(ct);
+
+            var messages = await query.AsNoTracking().OrderBy(m => m.SentAt)
+                .Skip((page - 1) * pageSize).Take(pageSize)
+                .Select(m => new Message
+                {
+                    Id = m.Id,
+                    Text = m.Text,
+                    SentAt = m.SentAt,
+                    ChatUserId = m.ChatUserId,
+                    ChatUser = new ChatUser { Username = m.ChatUser.Username }
+                })
+                .ToListAsync(ct);
+
+            return (messages, totalCount);
+        }
     }
 }

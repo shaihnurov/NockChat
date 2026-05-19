@@ -14,6 +14,6 @@ namespace NockChat.Persistence.Repositories
         }
 
         public async Task<Room?> GetByAccessCodeAsync(string accessCode, CancellationToken ct = default)
-            => await db.Rooms.FirstOrDefaultAsync(r => r.AccessCode == accessCode, ct);
+            => await db.Rooms.AsNoTracking().FirstOrDefaultAsync(r => r.AccessCode == accessCode, ct);
     }
 }

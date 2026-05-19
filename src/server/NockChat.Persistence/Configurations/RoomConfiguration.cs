@@ -10,6 +10,8 @@ namespace NockChat.Persistence.Configurations
         {
             builder.HasKey(r => r.Id);
 
+            builder.HasIndex(r => r.AccessCode).IsUnique();
+
             builder.Property(r => r.Name)
                 .IsRequired()
                 .HasMaxLength(100);
