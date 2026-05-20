@@ -14,7 +14,7 @@
             <avalonia:MaterialIcon Width="30" Height="30" Kind="AbjadArabic" 
                     Foreground="{DynamicResource SukiPrimaryColor}"/>
                 
-            <TextBlock Text="Создайте комнату и отправьте&#x0a;ссылку для общения"
+            <TextBlock Text="Создайте комнату и отправьте&#x0a;код для общения другу"
                        FontSize="17"/>
         </StackPanel>
 
@@ -24,30 +24,30 @@
             <u:UrsaGroupBox Header="Комната" HeaderSpacing="12"
                             HorizontalAlignment="Center" MaxWidth="400">
                 <StackPanel Spacing="8">
+                    <TextBox Classes="Large Clearable" PlaceholderText="Имя в чате" 
+                             u:FormItem.IsRequired="True" Text="{Binding UserName, Mode=TwoWay}"/>
+                    <TextBlock Text="В каждой комнате используется новое&#x0a;уникальное имя" HorizontalAlignment="Center"
+                               FontSize="12" Foreground="{DynamicResource SemiRed2}"/>
+
+                    <Separator Width="250"/>
+
                     <TextBox Classes="Large Clearable" PlaceholderText="Название чата"
                                 u:FormItem.IsRequired="True" 
                                 Text="{Binding RoomName, Mode=TwoWay}"/>
 
-                    <TextBox Classes="Large Clearable" PlaceholderText="Ваше имя в чате"
-                                u:FormItem.IsRequired="True" 
-                                Text="{Binding UserName, Mode=TwoWay}"/>
-
 		            <u:IconButton Icon="{DynamicResource SemiIconKeyStroked}" 
-                        Content="Создать комнату" Command="{Binding GeneratedChatRoomCommand}"
-                        Classes="Colorful Primary" 
-                        Theme="{DynamicResource OutlineIconButton}" />
+                                  Content="Создать комнату" Command="{Binding GeneratedChatRoomCommand}" 
+                                  Classes="Colorful Primary" Theme="{DynamicResource OutlineIconButton}" />
 
                     <TextBlock Text="или" HorizontalAlignment="Center"
                                FontSize="12"/>
 
-                    <TextBox Classes="Large Clearable" PlaceholderText="Код доступа"
-                                u:FormItem.IsRequired="True" 
-                                Text="{Binding AccessCode, Mode=TwoWay}"/>
+                    <TextBox Classes="Large Clearable" PlaceholderText="Код доступа" 
+                             u:FormItem.IsRequired="True" Text="{Binding AccessCode, Mode=TwoWay}"/>
 
 		            <u:IconButton Icon="{DynamicResource SemiIconForwardStroked}" 
-                        Content="Присоедениться к комнате" Command="{Binding JoinChatRoomCommand}"
-                        Classes="Colorful Primary" 
-                        Theme="{DynamicResource OutlineIconButton}" />
+                                  Content="Присоедениться к комнате" Command="{Binding JoinChatRoomCommand}" 
+                                  Classes="Colorful Primary" Theme="{DynamicResource OutlineIconButton}" />
                 </StackPanel>
             </u:UrsaGroupBox>
         </StackPanel>
