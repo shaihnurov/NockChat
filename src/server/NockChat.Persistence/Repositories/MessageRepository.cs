@@ -4,8 +4,12 @@ using NockChat.Domain.Entities;
 
 namespace NockChat.Persistence.Repositories
 {
+    /// <summary>
+    /// Реализация <see cref="IMessageRepository"/>
+    /// </summary>
     public class MessageRepository(AppDbContext db) : IMessageRepository
     {
+        /// <inheritdoc/>
         public async Task<Message> CreateAsync(Message message, CancellationToken ct = default)
         {
             await db.Messages.AddAsync(message, ct);
@@ -13,6 +17,7 @@ namespace NockChat.Persistence.Repositories
             return message;
         }
 
+        /// <inheritdoc/>
         public async Task<(List<Message> Messages, int TotalCount)> GetByRoomAsync(int roomId, int page, int pageSize, CancellationToken ct = default)
         {
             var query = db.Messages.Where(m => m.RoomId == roomId);

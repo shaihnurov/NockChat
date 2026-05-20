@@ -5,11 +5,25 @@ using NockChat.Domain.Entities;
 
 namespace NockChat.Application.Rooms.Commands.CreateRoom
 {
+    /// <summary>
+    /// Команда для создания новой комнаты чата
+    /// </summary>
+    /// <param name="Name">Название комнаты</param>
+    /// <param name="Username">Имя пользователя — создателя комнаты</param>
     public record CreateRoomCommand(string Name, string Username) : IRequest<CreateRoomResponse>;
 
-    public class CreateRoomCommandHandler(IRoomRepository roomRepository, IChatUserRepository chatUserRepository, 
+    /// <summary>
+    /// Обработчик <see cref="CreateRoomCommand"/>
+    /// </summary>
+    public class CreateRoomCommandHandler(IRoomRepository roomRepository, IChatUserRepository chatUserRepository,
         ITokenService tokenService) : IRequestHandler<CreateRoomCommand, CreateRoomResponse>
     {
+        /// <summary>
+        /// Создаёт комнату с уникальным кодом доступа, добавляет пользователя и возвращает токен
+        /// </summary>
+        /// <param name="request">Данные команды</param>
+        /// <param name="ct">Токен</param>
+        /// <returns>Данные созданной комнаты с кодом доступа и JWT-токеном</returns>
         public async Task<CreateRoomResponse> Handle(CreateRoomCommand request, CancellationToken ct)
         {
             var room = new Room
@@ -35,6 +49,11 @@ namespace NockChat.Application.Rooms.Commands.CreateRoom
             return new CreateRoomResponse(createdRoom.Name, createdRoom.AccessCode, createdUser.Username, token);
         }
 
+        /// <summary>
+        /// Генерирует случайный код доступа к комнате в формате <c>XXXX-XXXX</c>
+        /// из символов верхнего регистра и цифр (без визуально схожих знаков)
+        /// </summary>
+        /// <returns>Код доступа в формате <c>XXXX-XXXX</c></returns>
         private static string GenerateAccessCode()
         {
             const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

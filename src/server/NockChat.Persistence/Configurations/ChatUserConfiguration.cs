@@ -4,19 +4,19 @@ using NockChat.Domain.Entities;
 
 namespace NockChat.Persistence.Configurations
 {
+    /// <summary>
+    /// Конфигурация EF Core для сущности <see cref="ChatUser"/>
+    /// </summary>
     public class ChatUserConfiguration : IEntityTypeConfiguration<ChatUser>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<ChatUser> builder)
         {
             builder.HasKey(u => u.Id);
 
-            builder.Property(u => u.Username)
-                .IsRequired()
-                .HasMaxLength(50);
+            builder.Property(u => u.Username).IsRequired().HasMaxLength(50);
 
-            // Уникальное имя в рамках одной комнаты
-            builder.HasIndex(u => new { u.RoomId, u.Username })
-                .IsUnique();
+            builder.HasIndex(u => new { u.RoomId, u.Username }).IsUnique();
         }
     }
 }

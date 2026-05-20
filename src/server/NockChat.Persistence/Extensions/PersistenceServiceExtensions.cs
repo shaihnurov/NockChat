@@ -6,6 +6,9 @@ using NockChat.Persistence.Repositories;
 
 namespace NockChat.Persistence.Extensions
 {
+    /// <summary>
+    /// Методы расширения для регистрации служб Persistence-слоя
+    /// </summary>
     public static class PersistenceServiceExtensions
     {
         public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)

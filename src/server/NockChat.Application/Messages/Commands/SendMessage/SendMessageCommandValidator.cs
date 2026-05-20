@@ -2,8 +2,15 @@
 
 namespace NockChat.Application.Messages.Commands.SendMessage
 {
+    /// <summary>
+    /// Валидатор <see cref="SendMessageCommand"/>
+    /// Проверяет корректность текста сообщения, идентификатора комнаты и пользователя
+    /// </summary>
     public class SendMessageCommandValidator : AbstractValidator<SendMessageCommand>
     {
+        /// <summary>
+        /// Инициализирует правила валидации команды отправки сообщения
+        /// </summary>
         public SendMessageCommandValidator()
         {
             RuleFor(x => x.Text)

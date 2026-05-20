@@ -1,9 +1,9 @@
 using NockChat.Api.Exceptions;
 using NockChat.Api.Extensions;
 using NockChat.Application.Extensions;
-using NockChat.Persistence.Extensions;
 using NockChat.Infrastructure.Extensions;
 using NockChat.Infrastructure.Hubs;
+using NockChat.Persistence.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -8,6 +8,9 @@ using NockChat.Infrastructure.Services;
 
 namespace NockChat.Infrastructure.Extensions
 {
+    /// <summary>
+    /// Методы расширения для регистрации служб Infrastructure-слоя
+    /// </summary>
     public static class InfrastructureServiceExtensions
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)

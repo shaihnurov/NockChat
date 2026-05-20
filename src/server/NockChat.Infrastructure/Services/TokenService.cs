@@ -7,8 +7,12 @@ using NockChat.Application.Common.Interfaces;
 
 namespace NockChat.Infrastructure.Services
 {
+    /// <summary>
+    /// Реализация <see cref="ITokenService"/> на основе JWT
+    /// </summary>
     public class TokenService(IConfiguration configuration) : ITokenService
     {
+        /// <inheritdoc/>
         public string GenerateToken(int chatUserId, int roomId, string roomName, string username)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Secret"]!));
@@ -25,8 +29,8 @@ namespace NockChat.Infrastructure.Services
             var token = new JwtSecurityToken(
                 issuer: configuration["Jwt:Issuer"],
                 audience: configuration["Jwt:Audience"],
-                claims: claims, 
-                expires: DateTime.UtcNow.AddDays(30), 
+                claims: claims,
+                expires: DateTime.UtcNow.AddDays(30),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

@@ -4,8 +4,12 @@ using NockChat.Domain.Entities;
 
 namespace NockChat.Persistence.Repositories
 {
+    /// <summary>
+    /// Реализация <see cref="IRoomRepository"/>
+    /// </summary>
     public class RoomRepository(AppDbContext db) : IRoomRepository
     {
+        /// <inheritdoc/>
         public async Task<Room> CreateAsync(Room room, CancellationToken ct = default)
         {
             await db.Rooms.AddAsync(room, ct);
@@ -13,6 +17,7 @@ namespace NockChat.Persistence.Repositories
             return room;
         }
 
+        /// <inheritdoc/>
         public async Task<Room?> GetByAccessCodeAsync(string accessCode, CancellationToken ct = default)
             => await db.Rooms.AsNoTracking().FirstOrDefaultAsync(r => r.AccessCode == accessCode, ct);
     }

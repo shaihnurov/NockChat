@@ -2,8 +2,14 @@
 
 namespace NockChat.Application.Rooms.Commands.CreateRoom
 {
+    /// <summary>
+    /// Валидатор <see cref="CreateRoomCommand"/>
+    /// </summary>
     public class CreateRoomCommandValidator : AbstractValidator<CreateRoomCommand>
     {
+        /// <summary>
+        /// Инициализирует правила валидации команды создания комнаты
+        /// </summary>
         public CreateRoomCommandValidator()
         {
             RuleFor(x => x.Name)

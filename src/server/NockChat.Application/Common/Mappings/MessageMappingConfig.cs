@@ -4,8 +4,15 @@ using NockChat.Domain.Entities;
 
 namespace NockChat.Application.Common.Mappings
 {
+    /// <summary>
+    /// Конфигурация маппинга Mapster для сущности <see cref="Message"/>.
+    /// Регистрирует два профиля: из <see cref="Message"/> и из кортежа
+    /// <c>(Message, Username)</c> — для случаев, когда имя пользователя
+    /// передаётся отдельно без загрузки навигационного свойства
+    /// </summary>
     public class MessageMappingConfig : IRegister
     {
+        /// <inheritdoc/>
         public void Register(TypeAdapterConfig config)
         {
             config.NewConfig<Message, MessageResponse>()

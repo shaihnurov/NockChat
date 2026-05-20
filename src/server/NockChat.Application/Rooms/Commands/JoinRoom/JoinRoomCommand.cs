@@ -6,11 +6,27 @@ using NockChat.Domain.Entities;
 
 namespace NockChat.Application.Rooms.Commands.JoinRoom
 {
+    /// <summary>
+    /// Команда для входа пользователя в существующую комнату чата
+    /// </summary>
+    /// <param name="AccessCode">Код доступа к комнате</param>
+    /// <param name="Username">Имя пользователя, входящего в комнату</param>
     public record JoinRoomCommand(string AccessCode, string Username) : IRequest<JoinRoomResponse>;
 
-    public class JoinRoomCommandHandler(IRoomRepository roomRepository, IChatUserRepository chatUserRepository, 
+    /// <summary>
+    /// Обработчик <see cref="JoinRoomCommand"/>
+    /// </summary>
+    public class JoinRoomCommandHandler(IRoomRepository roomRepository, IChatUserRepository chatUserRepository,
         ITokenService tokenService) : IRequestHandler<JoinRoomCommand, JoinRoomResponse>
     {
+        /// <summary>
+        /// Выполняет вход пользователя в комнату по коду доступа
+        /// </summary>
+        /// <param name="request">Данные команды</param>
+        /// <param name="ct">Токен</param>
+        /// <returns>Данные комнаты и JWT-токен для доступа</returns>
+        /// <exception cref="NotFoundException">Комната с указанным кодом доступа не найдена</exception>
+        /// <exception cref="ConflictException">Имя пользователя уже занято в этой комнате</exception>
         public async Task<JoinRoomResponse> Handle(JoinRoomCommand request, CancellationToken ct)
         {
             var room = await roomRepository.GetByAccessCodeAsync(request.AccessCode, ct) ?? throw new NotFoundException($"Комната не найдена");

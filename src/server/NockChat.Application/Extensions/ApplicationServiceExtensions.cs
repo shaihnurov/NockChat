@@ -7,6 +7,9 @@ using NockChat.Application.Common.Behaviors;
 
 namespace NockChat.Application.Extensions
 {
+    /// <summary>
+    /// Методы расширения для регистрации служб Application-слоя
+    /// </summary>
     public static class ApplicationServiceExtensions
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)

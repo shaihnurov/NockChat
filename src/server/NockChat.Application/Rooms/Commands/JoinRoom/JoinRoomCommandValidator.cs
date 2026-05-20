@@ -2,8 +2,14 @@
 
 namespace NockChat.Application.Rooms.Commands.JoinRoom
 {
+    /// <summary>
+    /// Валидатор <see cref="JoinRoomCommand"/>
+    /// </summary>
     public class JoinRoomCommandValidator : AbstractValidator<JoinRoomCommand>
     {
+        /// <summary>
+        /// Инициализирует правила валидации команды входа в комнату
+        /// </summary>
         public JoinRoomCommandValidator()
         {
             RuleFor(x => x.AccessCode)
