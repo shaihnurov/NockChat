@@ -22,11 +22,17 @@
 
                 <TextBlock Grid.Column="1" Text="{Binding RoomName, Mode=OneWay}" VerticalAlignment="Center"/>
 
-                <Button Grid.Column="2" Command="{Binding ToggleAccessCodeCommand}"
+                <Button Grid.Column="2" Command="{Binding OptionsCommand}"
+                        Background="Transparent" CornerRadius="12" Padding="8"
+                        ToolTip.Tip="Настройки">
+                    <avalonia:MaterialIcon Kind="Settings" Width="20" Height="20"/>
+                </Button>
+
+                <!--<Button Grid.Column="2" Command="{Binding ToggleAccessCodeCommand}"
                         Background="Transparent" CornerRadius="12" Padding="8"
                         ToolTip.Tip="Показать код комнаты">
                     <avalonia:MaterialIcon Kind="ShareVariantOutline" Width="20" Height="20"/>
-                </Button>
+                </Button>-->
             </Grid>
         </Border>
 

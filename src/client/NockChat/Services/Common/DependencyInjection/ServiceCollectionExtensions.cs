@@ -15,7 +15,9 @@ using NockChat.Services.HTTP.Requests.Messages;
 using NockChat.Services.HTTP.Requests.Rooms;
 using NockChat.Services.HTTP.SignalR;
 using NockChat.ViewModels;
+using NockChat.ViewModels.Dialogs;
 using NockChat.Views;
+using NockChat.Views.Dialogs;
 
 namespace NockChat.Services.Common.DependencyInjection
 {
@@ -53,6 +55,7 @@ namespace NockChat.Services.Common.DependencyInjection
             services.AddViewModel<MainViewModel>(ServiceLifetime.Transient);
             services.AddViewModel<HomeViewModel>(ServiceLifetime.Transient);
             services.AddViewModel<ChatListViewModel>(ServiceLifetime.Transient);
+            services.AddViewModel<ChatOptionsDialogViewModel>(ServiceLifetime.Transient);
 
             return services;
         }

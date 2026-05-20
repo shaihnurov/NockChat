@@ -51,6 +51,9 @@
     <Compile Update="Views\ChatListView.axaml.cs">
       <DependentUpon>ChatListView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\Dialogs\ChatOptionsDialogView.axaml.cs">
+      <DependentUpon>ChatOptionsDialogView.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

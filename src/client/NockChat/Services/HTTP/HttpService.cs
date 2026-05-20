@@ -57,6 +57,10 @@ namespace NockChat.Services.HTTP
             => SendAsync<T>(HttpMethod.Delete, endpoint, body, ct: ct);
 
         /// <inheritdoc />
+        public Task<(bool Success, T? Data, string? ErrorMessage)> DeleteAsync<T>(string endpoint, string token, object? body = null, CancellationToken ct = default)
+            => SendAsync<T>(HttpMethod.Delete, endpoint, token: token, body: body, ct: ct);
+
+        /// <inheritdoc />
         public async Task<(bool Success, T? Data, string? ErrorMessage)> PostMultipartAsync<T>(string endpoint, MultipartFormDataContent multipart, CancellationToken ct = default)
             => await SendAsync<T>(HttpMethod.Post, endpoint, httpContent: multipart, ct: ct);
 

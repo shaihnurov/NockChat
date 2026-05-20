@@ -52,6 +52,11 @@ namespace NockChat.Services.HTTP
         Task<(bool Success, T? Data, string? ErrorMessage)> DeleteAsync<T>(string endpoint, object? body = null, CancellationToken ct = default);
 
         /// <summary>
+        /// Выполняет HTTP DELETE-запрос, опционально с JSON-телом
+        /// </summary>
+        Task<(bool Success, T? Data, string? ErrorMessage)> DeleteAsync<T>(string endpoint, string token, object? body = null, CancellationToken ct = default);
+
+        /// <summary>
         /// Выполняет GET-запрос и возвращает поток данных без загрузки всего содержимого в память.
         /// Вызывающий код обязан вызвать Dispose на возвращённом потоке.
         /// </summary>

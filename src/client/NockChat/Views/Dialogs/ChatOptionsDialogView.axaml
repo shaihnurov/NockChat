@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:u="https://irihi.tech/ursa"
+             x:Class="NockChat.Views.Dialogs.ChatOptionsDialogView"
+             xmlns:models="using:NockChat.Models.Rooms"
+             xmlns:vm="using:NockChat.ViewModels.Dialogs"
+             x:DataType="vm:ChatOptionsDialogViewModel">
+
+    <Grid Margin="60 20 60 20" RowDefinitions="Auto *" RowSpacing="25">
+        <TextBlock Grid.Row="0" Text="Настройки комнаты" HorizontalAlignment="Center"
+                   VerticalAlignment="Top" Classes="H3"
+                   Theme="{DynamicResource TitleTextBlock}"/>
+
+        <StackPanel Grid.Row="1" Spacing="10">
+			<u:UrsaGroupBox Header="Список пользователей" HeaderSpacing="12" HorizontalAlignment="Center" 
+                            MaxWidth="400">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Users, Mode=OneWay}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:RoomUserModel">
+                                <Border Margin="10" BorderThickness="1" HorizontalAlignment="Center" Padding="10"
+                                        CornerRadius="3" BorderBrush="{DynamicResource SemiGrey2}">
+                                    <StackPanel Orientation="Horizontal" Spacing="15">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{Binding Username, Mode=OneWay}" FontSize="16" Foreground="{DynamicResource SemiColorText0}"
+                                                        FontWeight="Light"/>
+                                            <TextBlock Text="{Binding JoinedAt, Mode=OneWay}" FontSize="12" Foreground="{DynamicResource SemiColorText2}"
+                                                        FontWeight="Light"/>
+                                        </StackPanel>
+
+		                                <u:IconButton Icon="{DynamicResource SemiIconCrossStroked}" FontWeight="Light"
+                                                      Classes="Colorful Primary" Background="Transparent"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </u:UrsaGroupBox>
+
+            <Separator Width="250"/>
+
+		    <Button FontWeight="Light" Content="Покинуть комнату" Command="{Binding LeaveRoomCommand}" 
+                    Classes="Danger" Theme="{StaticResource OutlineButton}" />
+
+		    <Button FontWeight="Light" Content="Удалить комнату" Command="{Binding DeleteRoomCommand}" 
+                    Classes="Danger" Theme="{StaticResource SolidButton}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

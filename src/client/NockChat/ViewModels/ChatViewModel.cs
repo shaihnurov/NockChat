@@ -1,20 +1,25 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using NockChat.Models.Messages;
 using NockChat.Models.Sessions;
+using NockChat.Services.Common.Factory;
 using NockChat.Services.Common.Navigations;
 using NockChat.Services.Common.Notifications;
 using NockChat.Services.Common.UI;
 using NockChat.Services.HTTP.Requests.Messages;
 using NockChat.Services.HTTP.SignalR;
+using NockChat.ViewModels.Dialogs;
+using NockChat.Views.Dialogs;
+using Ursa.Controls;
+using Ursa.Controls.OverlayShared;
 
 namespace NockChat.ViewModels
 {
-    public partial class ChatViewModel(ISignalRService signalRService, IMessageRequestsService messageService, 
+    public partial class ChatViewModel(ISignalRService signalRService, IMessageRequestsService messageService, IServiceProvider serviceProvider,
         INotificationService notificationService, INavigationService navigationService, IAppUiState appUiState, RoomSession session) : ViewModelBase
     {
         [ObservableProperty]
@@ -103,6 +108,14 @@ namespace NockChat.ViewModels
 
             await navigationService.RequestNavigation<ChatListViewModel>();
             appUiState.IsActiveToggleMenu = true;
+        }
+
+        [RelayCommand]
+        private async Task Options()
+        {
+            var optionsVm = serviceProvider.GetRequiredService<IViewModelFactory<ChatOptionsDialogViewModel>>().Create(session);
+            await optionsVm.Initialize();
+            await OverlayDialog.ShowCustomAsync<ChatOptionsDialogView, ChatOptionsDialogViewModel, bool>(vm: optionsVm);
         }
     }
 }
