@@ -10,13 +10,33 @@
              x:DataType="vm:ChatViewModel">
 
     <Grid Margin="0 40 0 0">
+       <Border VerticalAlignment="Top" HorizontalAlignment="Center" CornerRadius="10"
+               BorderBrush="{DynamicResource SemiAIGeneral1}" BorderThickness="1"
+               Background="{DynamicResource SemiColorTertiaryLight}" ZIndex="99">
+            <Grid ColumnDefinitions="Auto Auto Auto" ColumnSpacing="15">
+                <Button Grid.Column="0" Command="{Binding LeaveRoomCommand}"
+                        Background="Transparent" CornerRadius="12"
+                        Padding="8" ToolTip.Tip="Покинуть комнату">
+                    <avalonia:MaterialIcon Kind="ArrowLeft" Width="20" Height="20"/>
+                </Button>
+
+                <TextBlock Grid.Column="1" Text="{Binding RoomName, Mode=OneWay}" VerticalAlignment="Center"/>
+
+                <Button Grid.Column="2" Command="{Binding ToggleAccessCodeCommand}"
+                        Background="Transparent" CornerRadius="12" Padding="8"
+                        ToolTip.Tip="Показать код комнаты">
+                    <avalonia:MaterialIcon Kind="ShareVariantOutline" Width="20" Height="20"/>
+                </Button>
+            </Grid>
+        </Border>
+
         <ScrollViewer x:Name="MessagesScroll" Padding="12 0 12 0" VerticalScrollBarVisibility="Auto"
                       Margin="0 0 0 70">
-            <ItemsControl ItemsSource="{Binding Messages}">
+            <ItemsControl ItemsSource="{Binding Messages, Mode=OneWay}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:MessageModel">
                         <Grid Margin="0 10">
-                            <Border IsVisible="{Binding !IsOwn}"
+                            <Border IsVisible="{Binding !IsOwn, Mode=OneWay}"
                                     HorizontalAlignment="Left"
                                     MaxWidth="320"
                                     Padding="12 8"
@@ -24,21 +44,21 @@
                                     Background="{DynamicResource SemiGrey1}">
                                 <Grid RowDefinitions="Auto * Auto" ColumnDefinitions="* Auto" 
                                       ColumnSpacing="25">
-                                    <TextBlock Text="{Binding Username}"
+                                    <TextBlock Text="{Binding Username, Mode=OneWay}"
                                                Grid.Row="0" Grid.Column="0" FontSize="14"
-                                               FontWeight="SemiBold"
+                                               FontWeight="Light"
                                                Foreground="{DynamicResource SemiAIGeneral4}"/>
-                                    <TextBlock Text="{Binding Text}"
+                                    <TextBlock Text="{Binding Text, Mode=OneWay}" FontWeight="Light"
                                                Grid.Row="1" Grid.Column="0"
                                                TextWrapping="Wrap" FontSize="16"
                                                Foreground="{DynamicResource SemiColorText0}"/>
-                                    <TextBlock Text="{Binding SentAt, StringFormat='{}{0:HH:mm}'}"
+                                    <TextBlock Text="{Binding SentAt, Mode=OneWay, StringFormat='{}{0:HH:mm}'}" FontWeight="Light"
                                                Grid.Row="2" Grid.Column="1" FontSize="10" Margin="0 -8"
                                                Foreground="{DynamicResource SemiAIGeneral7}"/>
                                 </Grid>
                             </Border>
 
-                            <Border IsVisible="{Binding IsOwn}"
+                            <Border IsVisible="{Binding IsOwn, Mode=OneWay}"
                                     HorizontalAlignment="Right"
                                     MaxWidth="320"
                                     Padding="12 8"
@@ -46,11 +66,11 @@
                                     Background="{DynamicResource SemiGrey1}">
                                 <Grid RowDefinitions="* Auto" ColumnDefinitions="* Auto" 
                                       ColumnSpacing="25">
-                                    <TextBlock Text="{Binding Text}"
+                                    <TextBlock Text="{Binding Text, Mode=OneWay}" FontWeight="Light"
                                                Grid.Row="0" Grid.Column="0"
                                                TextWrapping="Wrap" FontSize="16"
                                                Foreground="{DynamicResource SemiColorText0}"/>
-                                    <TextBlock Text="{Binding SentAt, StringFormat='{}{0:HH:mm}'}"
+                                    <TextBlock Text="{Binding SentAt, Mode=OneWay, StringFormat='{}{0:HH:mm}'}" FontWeight="Light"
                                                Grid.Row="1" Grid.Column="1" FontSize="10" Margin="0 -8"
                                                Foreground="{DynamicResource SemiAIGeneral7}"/>
                                 </Grid>
@@ -61,8 +81,7 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <!-- Индикатор подключения -->
-        <StackPanel IsVisible="{Binding IsConnecting}"
+        <StackPanel IsVisible="{Binding IsConnecting, Mode=OneWay}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Spacing="12">
@@ -70,10 +89,8 @@
             <TextBlock Text="Подключение..." HorizontalAlignment="Center"/>
         </StackPanel>
 
-        <!-- AccessCode popup -->
-        <Border IsVisible="{Binding IsAccessCodeVisible}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
+        <Border IsVisible="{Binding IsAccessCodeVisible, Mode=OneWay}"
+                HorizontalAlignment="Center" VerticalAlignment="Bottom"
                 Margin="0 0 0 90"
                 Padding="16 10"
                 CornerRadius="12"
@@ -87,55 +104,24 @@
             </StackPanel>
         </Border>
 
-        <!-- Плавающий бар ввода -->
         <Border VerticalAlignment="Bottom" HorizontalAlignment="Center"
                 Margin="12 0 12 12" Padding="8" CornerRadius="16"
                 Background="{DynamicResource SemiGrey1}">
-            <Grid ColumnDefinitions="Auto * Auto Auto">
-
-                <!-- Кнопка AccessCode -->
-                <Button Grid.Column="0"
-                        Command="{Binding ToggleAccessCodeCommand}"
-                        Background="Transparent"
-                        CornerRadius="12"
-                        Padding="8"
-                        ToolTip.Tip="Показать код комнаты">
-                    <avalonia:MaterialIcon Kind="Key" Width="20" Height="20"/>
-                </Button>
-
-                <!-- Поле ввода -->
-                <TextBox Grid.Column="1"
-                         Text="{Binding MessageText}"
-                         PlaceholderText="Написать сообщение..."
-                         AcceptsReturn="False"
-                         MaxLength="4000"
-                         VerticalAlignment="Center"
-                         BorderThickness="0"
-                         Background="Transparent">
+            <Grid ColumnDefinitions="* Auto ">
+                <TextBox Grid.Column="0" Text="{Binding MessageText, Mode=TwoWay}"
+                         PlaceholderText="Сообщение..." AcceptsReturn="False"
+                         MaxLength="4000" VerticalAlignment="Center"
+                         BorderThickness="0" Background="Transparent">
                     <TextBox.KeyBindings>
                         <KeyBinding Gesture="Enter" Command="{Binding SendMessageCommand}"/>
                     </TextBox.KeyBindings>
                 </TextBox>
 
-                <!-- Кнопка выхода -->
-                <Button Grid.Column="2"
-                        Command="{Binding LeaveRoomCommand}"
-                        Background="Transparent"
-                        CornerRadius="12"
-                        Padding="8"
-                        ToolTip.Tip="Покинуть комнату">
-                    <avalonia:MaterialIcon Kind="ExitToApp" Width="20" Height="20"/>
-                </Button>
-
-                <!-- Кнопка отправки -->
-                <Button Grid.Column="3"
-                        Command="{Binding SendMessageCommand}"
-                        CornerRadius="12"
-                        Padding="8"
+                <Button Grid.Column="1" IsVisible="{Binding MessageText.Length, Mode=OneWay}"
+                        Command="{Binding SendMessageCommand}" Background="Transparent"
                         ToolTip.Tip="Отправить">
                     <avalonia:MaterialIcon Kind="Send" Width="20" Height="20"/>
                 </Button>
-
             </Grid>
         </Border>
     </Grid>

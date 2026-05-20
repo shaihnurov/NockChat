@@ -22,6 +22,7 @@
                         VerticalContentAlignment="Stretch"/>
 
         <Image Source="/Assets/logo.ico" Width="150" Height="150"
+               IsVisible="{Binding AppUiState.IsActiveToggleMenu, Mode=OneWay}"
                VerticalAlignment="Top" HorizontalAlignment="Center"/>
 
         <navigation:NavigationMenuView VerticalAlignment="Bottom"

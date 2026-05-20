@@ -24,12 +24,10 @@
                 <u:UrsaGroupBox Header="Выберите комнату" HeaderSpacing="12"
                                 HorizontalAlignment="Center">
                         <StackPanel>
-                            <TextBlock Text="У вас пока нет комнат"
-                                       HorizontalAlignment="Center"
-                                       Foreground="{DynamicResource SukiLowText}"
-                                       IsVisible="{Binding !Rooms.Count}"/>
+                            <TextBlock Text="У вас пока нет комнат" HorizontalAlignment="Center"
+                                       IsVisible="{Binding !Rooms.Count, Mode=OneWay}"/>
 
-                            <ItemsControl ItemsSource="{Binding Rooms}">
+                            <ItemsControl ItemsSource="{Binding Rooms, Mode=OneWay}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <WrapPanel />
@@ -38,16 +36,15 @@
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="models:RoomSession">
-                                        <Border Margin="10" BorderThickness="1"
-                                                CornerRadius="8" BorderBrush="{DynamicResource SemiGrey9}">
+                                        <Border Margin="10" BorderThickness="1" HorizontalAlignment="Center"
+                                                CornerRadius="3" BorderBrush="{DynamicResource SemiGrey2}">
                                             <Button CommandParameter="{Binding}" Background="Transparent"
                                                     Command="{Binding $parent[ItemsControl].((vm:ChatListViewModel)DataContext).OpenRoomCommand}">
-                                                <StackPanel Spacing="4" Cursor="Hand">
-                                                    <TextBlock Text="{Binding RoomName}"
-                                                                FontSize="16"
-                                                                FontWeight="SemiBold"/>
-                                                    <TextBlock Text="{Binding Username}"
-                                                                FontSize="14" Classes="Secondary"/>
+                                                <StackPanel Spacing="4" Margin="5">
+                                                    <TextBlock Text="{Binding RoomName, Mode=OneWay}" FontSize="16" Foreground="{DynamicResource SemiColorText0}"
+                                                               FontWeight="Light"/>
+                                                    <TextBlock Text="{Binding Username, Mode=OneWay}" FontSize="12" Foreground="{DynamicResource SemiColorText2}"
+                                                               FontWeight="Light"/>
                                                 </StackPanel>
                                             </Button>
                                         </Border>

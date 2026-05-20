@@ -35,7 +35,7 @@
                                 u:FormItem.IsRequired="True" 
                                 Text="{Binding RoomName, Mode=TwoWay}"/>
 
-		            <u:IconButton Icon="{DynamicResource SemiIconKeyStroked}" 
+		            <u:IconButton Icon="{DynamicResource SemiIconKeyStroked}" FontWeight="Light"
                                   Content="Создать комнату" Command="{Binding GeneratedChatRoomCommand}" 
                                   Classes="Colorful Primary" Theme="{DynamicResource OutlineIconButton}" />
 
@@ -45,7 +45,7 @@
                     <TextBox Classes="Large Clearable" PlaceholderText="Код доступа" 
                              u:FormItem.IsRequired="True" Text="{Binding AccessCode, Mode=TwoWay}"/>
 
-		            <u:IconButton Icon="{DynamicResource SemiIconForwardStroked}" 
+		            <u:IconButton Icon="{DynamicResource SemiIconForwardStroked}" FontWeight="Light"
                                   Content="Присоедениться к комнате" Command="{Binding JoinChatRoomCommand}" 
                                   Classes="Colorful Primary" Theme="{DynamicResource OutlineIconButton}" />
                 </StackPanel>
