@@ -17,6 +17,14 @@ namespace NockChat.Application.Common.Interfaces
         Task<bool> ExistsAsync(int roomId, string username, CancellationToken ct = default);
 
         /// <summary>
+        /// Получает список всех пользователей, находящихся в указанной комнате
+        /// </summary>
+        /// <param name="roomId">Идентификатор комнаты</param>
+        /// <param name="ct">Токен</param>
+        /// <returns>Список пользователей в комнате</returns>
+        Task<IReadOnlyList<ChatUser>> GetRoomUsersAsync(int roomId, CancellationToken ct = default);
+
+        /// <summary>
         /// Создаёт нового пользователя чата и сохраняет его в базе данных
         /// </summary>
         /// <param name="chatUser">Данные создаваемого пользователя</param>

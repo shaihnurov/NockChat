@@ -24,6 +24,8 @@ namespace NockChat.Api.Controllers.V1
         /// <param name="pageSize">Количество сообщений на странице</param>
         /// <returns>Постраничный результат со списком сообщений</returns>
         [HttpGet]
+        [ProducesResponseType(typeof(PagedResult<MessageResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<PagedResult<MessageResponse>>> GetMessages([FromQuery] int page = 1, [FromQuery] int pageSize = 50)
             => Ok(await mediator.Send(new GetMessagesQuery(page, pageSize)));
     }

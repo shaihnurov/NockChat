@@ -36,9 +36,6 @@ namespace NockChat.Application.Messages.Commands.SendMessage
         {
             var chatUser = await chatUserRepository.GetByIdAsync(request.ChatUserId, ct) ?? throw new NotFoundException("Пользователь не найден");
 
-            if (chatUser.RoomId != request.RoomId)
-                throw new ConflictException("Пользователь не принадлежит этой комнате");
-
             var message = new Message
             {
                 RoomId = request.RoomId,

@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.RateLimiting;
 using NockChat.Application.DTOs.Requests;
 using NockChat.Application.DTOs.Responses;
 using NockChat.Application.Rooms.Commands.CreateRoom;
+using NockChat.Application.Rooms.Commands.DeleteRoom;
 using NockChat.Application.Rooms.Commands.JoinRoom;
+using NockChat.Application.Rooms.Queries;
 
 namespace NockChat.Api.Controllers.V1
 {
@@ -19,6 +21,17 @@ namespace NockChat.Api.Controllers.V1
     [Route("api/v{version:apiVersion}/rooms")]
     public class RoomsController(IMediator mediator) : ControllerBase
     {
+        /// <summary>
+        /// Возвращает список пользователей в комнате
+        /// </summary>
+        /// <param name="ct">Токен</param>
+        /// <returns>Список пользователей в комнате</returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(IReadOnlyList<RoomUsersResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IReadOnlyList<RoomUsersResponse>>> GetRoomUsers(CancellationToken ct)
+            => Ok(await mediator.Send(new GetRoomUsersQuery(), ct));
+
         /// <summary>
         /// Создаёт новую комнату чата и возвращает код доступа к ней
         /// </summary>
@@ -50,5 +63,18 @@ namespace NockChat.Api.Controllers.V1
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> JoinRoom([FromBody] JoinRoomRequest request, CancellationToken ct)
             => Ok(await mediator.Send(new JoinRoomCommand(request.AccessCode, request.Username), ct));
+
+        /// <summary>
+        /// Удаляет комнату
+        /// </summary>
+        /// <param name="ct">Токен</param>
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteRoom(CancellationToken ct)
+        {
+            await mediator.Send(new DeleteRoomCommand(), ct);
+            return NoContent();
+        }
     }
 }

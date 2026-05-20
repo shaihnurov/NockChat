@@ -22,5 +22,12 @@ namespace NockChat.Application.Common.Interfaces
         /// <param name="ct">Токен</param>
         /// <returns>Найденная комната или <c>null</c>, если не существует</returns>
         Task<Room?> GetByAccessCodeAsync(string accessCode, CancellationToken ct = default);
+
+        /// <summary>
+        /// Удаляет выбранную комнату
+        /// </summary>
+        /// <param name="roomId">Идентификатор комнаты</param>
+        /// <param name="ct">Токен</param>
+        Task DeleteAsync(int roomId, CancellationToken ct = default);
     }
 }

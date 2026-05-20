@@ -14,6 +14,15 @@ namespace NockChat.Persistence.Repositories
             => await db.ChatUsers.AsNoTracking().AnyAsync(u => u.RoomId == roomId && u.Username == username, ct);
 
         /// <inheritdoc/>
+        public async Task<IReadOnlyList<ChatUser>> GetRoomUsersAsync(int roomId, CancellationToken ct = default)
+            => await db.ChatUsers.AsNoTracking().Where(u => u.RoomId == roomId)
+                .Select(u => new ChatUser
+                {
+                    Username = u.Username,
+                    JoinedAt = u.JoinedAt
+                }).ToListAsync(ct);
+
+        /// <inheritdoc/>
         public async Task<ChatUser> CreateAsync(ChatUser chatUser, CancellationToken ct = default)
         {
             await db.ChatUsers.AddAsync(chatUser, ct);
