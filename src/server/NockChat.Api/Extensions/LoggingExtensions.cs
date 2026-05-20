@@ -2,8 +2,16 @@
 
 namespace NockChat.Api.Extensions
 {
+    /// <summary>
+    /// Методы расширения для настройки логирования через Serilog
+    /// </summary>
     public static class LoggingExtensions
     {
+        /// <summary>
+        /// Настраивает Serilog
+        /// </summary>
+        /// <param name="builder">Строитель веб-приложения</param>
+        /// <returns>Тот же строитель для цепочки вызовов</returns>
         public static WebApplicationBuilder AddLogging(this WebApplicationBuilder builder)
         {
             Log.Logger = new LoggerConfiguration()

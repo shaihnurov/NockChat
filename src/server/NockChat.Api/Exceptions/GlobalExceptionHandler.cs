@@ -5,6 +5,11 @@ using NockChat.Application.Common.Exceptions;
 
 namespace NockChat.Api.Exceptions
 {
+    /// <summary>
+    /// Глобальный обработчик исключений. Перехватывает необработанные исключения
+    /// и возвращает клиенту структурированный ответ в формате ProblemDetails (RFC 7807)
+    /// </summary>
+    /// <param name="logger">Логгер для записи</param>
     public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken cancellationToken)

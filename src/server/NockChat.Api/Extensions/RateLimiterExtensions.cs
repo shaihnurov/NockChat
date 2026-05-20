@@ -3,8 +3,18 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace NockChat.Api.Extensions
 {
+    /// <summary>
+    /// Методы расширения для настройки ограничения частоты запросов (rate limiting)
+    /// </summary>
     public static class RateLimiterExtensions
     {
+        /// <summary>
+        /// Регистрирует глобальный скользящий лимит запросов (100 в минуту на IP-адрес),
+        /// а также именованный лимит <c>join-room</c> (5 в минуту) для эндпоинта входа в комнату
+        /// При превышении лимита возвращается статус 429 с заголовком <c>Retry-After</c>
+        /// </summary>
+        /// <param name="services">Коллекция служб приложения</param>
+        /// <returns>Та же коллекция служб для цепочки вызовов</returns>
         public static IServiceCollection AddRateLimiting(this IServiceCollection services)
         {
             services.AddRateLimiter(options =>
@@ -37,6 +47,12 @@ namespace NockChat.Api.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Обработчик отклонённых запросов. Формирует JSON-ответ с сообщением об ошибке
+        /// и временем ожидания до следующей попытки в заголовке <c>Retry-After</c>
+        /// </summary>
+        /// <param name="context">Контекст отклонённого запроса</param>
+        /// <param name="ct">Токен</param>
         private static async ValueTask OnRejectedHandler(OnRejectedContext context, CancellationToken ct)
         {
             context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
