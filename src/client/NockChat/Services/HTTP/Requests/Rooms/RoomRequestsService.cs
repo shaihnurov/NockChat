@@ -79,5 +79,18 @@ namespace NockChat.Services.HTTP.Requests.Rooms
 
             return response;
         }
+
+        public async Task<InviteCodeModel?> GetInviteCodeRoom(string token, CancellationToken ct = default)
+        {
+            var (success, response, error) = await httpService.GetAsync<InviteCodeModel>("/api/v1/rooms/invite-code", token, ct: ct);
+
+            if (!success || response == null)
+            {
+                logger.LogWarning("Ошибка при получении кода доступа комнаты: {Error}", error);
+                return null;
+            }
+
+            return response;
+        }
     }
 }

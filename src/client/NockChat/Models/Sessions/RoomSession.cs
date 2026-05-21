@@ -7,6 +7,6 @@ namespace NockChat.Models.Sessions
         public string Token { get; set; } = string.Empty;
         public string RoomName { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
-        public DateTime JoinedAt { get; set; }
+        public DateTimeOffset JoinedAt { get; set; }
     }
 }

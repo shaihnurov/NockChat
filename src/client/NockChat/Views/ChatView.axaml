@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="850"
+             xmlns:u="https://irihi.tech/ursa"
              x:Class="NockChat.Views.ChatView"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:models="using:NockChat.Models.Messages"
@@ -27,12 +28,6 @@
                         ToolTip.Tip="Настройки">
                     <avalonia:MaterialIcon Kind="Settings" Width="20" Height="20"/>
                 </Button>
-
-                <!--<Button Grid.Column="2" Command="{Binding ToggleAccessCodeCommand}"
-                        Background="Transparent" CornerRadius="12" Padding="8"
-                        ToolTip.Tip="Показать код комнаты">
-                    <avalonia:MaterialIcon Kind="ShareVariantOutline" Width="20" Height="20"/>
-                </Button>-->
             </Grid>
         </Border>
 
@@ -58,7 +53,7 @@
                                                Grid.Row="1" Grid.Column="0"
                                                TextWrapping="Wrap" FontSize="16"
                                                Foreground="{DynamicResource SemiColorText0}"/>
-                                    <TextBlock Text="{Binding SentAt, Mode=OneWay, StringFormat='{}{0:HH:mm}'}" FontWeight="Light"
+                                    <TextBlock Text="{Binding SentAt.LocalDateTime, Mode=OneWay, StringFormat='{}{0:HH:mm}'}" FontWeight="Light"
                                                Grid.Row="2" Grid.Column="1" FontSize="10" Margin="0 -8"
                                                Foreground="{DynamicResource SemiAIGeneral7}"/>
                                 </Grid>
@@ -76,7 +71,7 @@
                                                Grid.Row="0" Grid.Column="0"
                                                TextWrapping="Wrap" FontSize="16"
                                                Foreground="{DynamicResource SemiColorText0}"/>
-                                    <TextBlock Text="{Binding SentAt, Mode=OneWay, StringFormat='{}{0:HH:mm}'}" FontWeight="Light"
+                                    <TextBlock Text="{Binding SentAt.LocalDateTime, Mode=OneWay, StringFormat='{}{0:HH:mm}'}" FontWeight="Light"
                                                Grid.Row="1" Grid.Column="1" FontSize="10" Margin="0 -8"
                                                Foreground="{DynamicResource SemiAIGeneral7}"/>
                                 </Grid>
@@ -91,26 +86,12 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Spacing="12">
-            <ProgressBar IsIndeterminate="True" Width="200"/>
+            <u:LoadingIcon />
             <TextBlock Text="Подключение..." HorizontalAlignment="Center"/>
         </StackPanel>
 
-        <Border IsVisible="{Binding IsAccessCodeVisible, Mode=OneWay}"
-                HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                Margin="0 0 0 90"
-                Padding="16 10"
-                CornerRadius="12"
-                Background="{DynamicResource SukiCardBackground}">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <avalonia:MaterialIcon Kind="Key" Width="16" Height="16"
-                                       Foreground="{DynamicResource SukiPrimaryColor}"/>
-                <TextBlock Text="AccessCode"
-                           FontFamily="Monospace"
-                           VerticalAlignment="Center"/>
-            </StackPanel>
-        </Border>
-
         <Border VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                BorderBrush="{DynamicResource SemiAIGeneral1}" BorderThickness="1"
                 Margin="12 0 12 12" Padding="8" CornerRadius="16"
                 Background="{DynamicResource SemiGrey1}">
             <Grid ColumnDefinitions="* Auto ">

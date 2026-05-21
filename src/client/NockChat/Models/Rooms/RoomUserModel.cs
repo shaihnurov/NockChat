@@ -5,6 +5,6 @@ namespace NockChat.Models.Rooms
     public class RoomUserModel
     {
         public string Username { get; set; } = string.Empty;
-        public DateTime JoinedAt { get; set; }
+        public DateTimeOffset JoinedAt { get; set; }
     }
 }

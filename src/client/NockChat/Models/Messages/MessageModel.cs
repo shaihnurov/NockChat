@@ -8,6 +8,6 @@ namespace NockChat.Models.Messages
         public bool IsOwn { get; set; }
         public string Text { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
-        public DateTime SentAt { get; set; }
+        public DateTimeOffset SentAt { get; set; }
     }
 }

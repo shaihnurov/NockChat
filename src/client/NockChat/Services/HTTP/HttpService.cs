@@ -84,7 +84,7 @@ namespace NockChat.Services.HTTP
         /// <summary>
         /// Единая точка отправки всех HTTP-запросов
         /// </summary>
-        private async Task<(bool Success, T? Data, string? ErrorMessage)> SendAsync<T>(HttpMethod method, string endpoint, object? body = null, 
+        private async Task<(bool Success, T? Data, string? ErrorMessage)> SendAsync<T>(HttpMethod method, string endpoint, object? body = null,
             HttpContent? httpContent = null, string? token = null, CancellationToken ct = default)
         {
             if (!networkService.IsOnline)

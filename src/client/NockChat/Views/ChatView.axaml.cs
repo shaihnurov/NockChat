@@ -36,7 +36,7 @@ public partial class ChatView : UserControl
     {
         var scroll = this.FindControl<ScrollViewer>("MessagesScroll");
 
-        if (scroll == null) 
+        if (scroll == null)
             return;
 
         Dispatcher.UIThread.Post(() => scroll.ScrollToEnd(), DispatcherPriority.Loaded);

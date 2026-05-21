@@ -15,7 +15,6 @@ using NockChat.Services.HTTP.SignalR;
 using NockChat.ViewModels.Dialogs;
 using NockChat.Views.Dialogs;
 using Ursa.Controls;
-using Ursa.Controls.OverlayShared;
 
 namespace NockChat.ViewModels
 {

@@ -15,13 +15,12 @@
                    Theme="{DynamicResource TitleTextBlock}"/>
 
         <StackPanel Grid.Row="1" Spacing="10">
-			<u:UrsaGroupBox Header="Список пользователей" HeaderSpacing="12" HorizontalAlignment="Center" 
-                            MaxWidth="400">
+			<u:UrsaGroupBox Header="Список пользователей" HorizontalAlignment="Center">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding Users, Mode=OneWay}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <WrapPanel />
+                                <WrapPanel Orientation="Vertical"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 
@@ -33,12 +32,13 @@
                                         <StackPanel Spacing="4">
                                             <TextBlock Text="{Binding Username, Mode=OneWay}" FontSize="16" Foreground="{DynamicResource SemiColorText0}"
                                                         FontWeight="Light"/>
-                                            <TextBlock Text="{Binding JoinedAt, Mode=OneWay}" FontSize="12" Foreground="{DynamicResource SemiColorText2}"
+                                            <TextBlock Text="{Binding JoinedAt.LocalDateTime, Mode=OneWay}" FontSize="12" Foreground="{DynamicResource SemiColorText2}"
                                                         FontWeight="Light"/>
                                         </StackPanel>
 
 		                                <u:IconButton Icon="{DynamicResource SemiIconCrossStroked}" FontWeight="Light"
-                                                      Classes="Colorful Primary" Background="Transparent"/>
+                                                      Classes="Colorful Primary" Background="Transparent" CommandParameter="{Binding}"
+                                                      Command="{Binding $parent[ItemsControl].((vm:ChatOptionsDialogViewModel)DataContext).KickUserCommand}"/>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
@@ -46,6 +46,25 @@
                     </ItemsControl>
                 </ScrollViewer>
             </u:UrsaGroupBox>
+
+			<u:UrsaGroupBox Header="Код доступа" HorizontalAlignment="Center"
+                            Cursor="Hand" ToolTip.Tip="Нажмите чтобы скопировать"
+                            PointerPressed="CopyInviteCode_Click" IsVisible="{Binding IsVisibleInviteCode, Mode=OneWay}">
+                <StackPanel>
+                    <TextBlock Text="{Binding InviteCode.InviteCode, Mode=OneWay}" Classes="Success"
+                               FontSize="18"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="Действует до" FontSize="12" Foreground="{DynamicResource SemiColorText2}"/>
+                        <TextBlock Text="{Binding InviteCode.ExpiresAt.LocalDateTime, StringFormat='{}{0:HH:mm}', Mode=OneWay}"
+                                   FontSize="12" Classes="Success"/>
+                    </StackPanel>
+                </StackPanel>
+            </u:UrsaGroupBox>
+
+            <u:IconButton Icon="{DynamicResource SemiIconKey}" FontWeight="Light" Content="Сгенерировать ключ входа" 
+                          Command="{Binding GetAccessCodeRoomCommand}" Classes="Colorful Primary" 
+                          IsVisible="{Binding !IsVisibleInviteCode, Mode=OneWay}" Theme="{StaticResource OutlineIconButton}" />
 
             <Separator Width="250"/>
 

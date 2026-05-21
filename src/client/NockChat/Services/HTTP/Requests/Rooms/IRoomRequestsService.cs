@@ -12,5 +12,6 @@ namespace NockChat.Services.HTTP.Requests.Rooms
         Task<RoomSession?> JoinRoom(string accessCode, string userName, CancellationToken ct = default);
         Task DeleteRoom(string token, CancellationToken ct = default);
         Task<IReadOnlyList<RoomUserModel>?> GetRoomUsers(string token, CancellationToken ct = default);
+        Task<InviteCodeModel?> GetInviteCodeRoom(string token, CancellationToken ct = default);
     }
 }

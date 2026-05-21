@@ -16,8 +16,6 @@ using NockChat.Services.HTTP.Requests.Rooms;
 using NockChat.Services.HTTP.SignalR;
 using NockChat.ViewModels;
 using NockChat.ViewModels.Dialogs;
-using NockChat.Views;
-using NockChat.Views.Dialogs;
 
 namespace NockChat.Services.Common.DependencyInjection
 {

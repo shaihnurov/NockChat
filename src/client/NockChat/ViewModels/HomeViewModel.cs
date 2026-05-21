@@ -11,15 +11,15 @@ namespace NockChat.ViewModels
     [View("Главная")]
     public partial class HomeViewModel(INotificationService notificationService, IRoomRequestsService roomRequests) : ViewModelBase
     {
-        [ObservableProperty] 
+        [ObservableProperty]
         public partial string? RoomName { get; set; }
         partial void OnRoomNameChanged(string? value) => ClearErrors(nameof(RoomName));
 
-        [ObservableProperty] 
+        [ObservableProperty]
         public partial string? UserName { get; set; }
         partial void OnUserNameChanged(string? value) => ClearErrors(nameof(UserName));
 
-        [ObservableProperty] 
+        [ObservableProperty]
         public partial string? AccessCode { get; set; }
         partial void OnAccessCodeChanged(string? value) => ClearErrors(nameof(AccessCode));
 
