@@ -33,6 +33,17 @@ namespace NockChat.Api.Controllers.V1
             => Ok(await mediator.Send(new GetRoomUsersQuery(), ct));
 
         /// <summary>
+        /// Возвращает временный код приглашения в комнату (действителен 5 минут)
+        /// </summary>
+        /// <param name="ct">Токен</param>
+        /// <returns>Временный код и время его истечения</returns>
+        [HttpGet("invite-code")]
+        [ProducesResponseType(typeof(InviteCodeResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<InviteCodeResponse>> GetInviteCode(CancellationToken ct)
+            => Ok(await mediator.Send(new GetInviteCodeQuery(), ct));
+
+        /// <summary>
         /// Создаёт новую комнату чата и возвращает код доступа к ней
         /// </summary>
         /// <param name="request">Данные для создания комнаты: название и имя пользователя</param>
@@ -45,7 +56,7 @@ namespace NockChat.Api.Controllers.V1
         public async Task<IActionResult> CreateRoom([FromBody] CreateRoomRequest request, CancellationToken ct)
         {
             var result = await mediator.Send(new CreateRoomCommand(request.Name, request.Username), ct);
-            return CreatedAtAction(nameof(CreateRoom), new { result.AccessCode }, result);
+            return CreatedAtAction(nameof(CreateRoom), null, result);
         }
 
         /// <summary>

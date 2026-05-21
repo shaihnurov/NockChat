@@ -12,9 +12,10 @@ namespace NockChat.Application.Rooms.Commands.JoinRoom
         /// </summary>
         public JoinRoomCommandValidator()
         {
-            RuleFor(x => x.AccessCode)
+            RuleFor(x => x.InviteCode)
                 .NotEmpty().WithMessage("Код доступа не может быть пустым")
-                .Matches(@"^[A-Z0-9]{4}-[A-Z0-9]{4}$").WithMessage("Неверный формат кода доступа");
+                .Length(8)
+                .Matches(@"^[A-Z0-9]{8}$").WithMessage("Неверный формат кода доступа");
 
             RuleFor(x => x.Username)
                 .NotEmpty().WithMessage("Имя пользователя не может быть пустым")

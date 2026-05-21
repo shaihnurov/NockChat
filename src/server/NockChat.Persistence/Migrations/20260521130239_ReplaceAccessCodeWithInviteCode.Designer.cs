@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NockChat.Persistence;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NockChat.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260521130239_ReplaceAccessCodeWithInviteCode")]
+    partial class ReplaceAccessCodeWithInviteCode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,7 +33,7 @@ namespace NockChat.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset>("JoinedAt")
+                    b.Property<DateTime>("JoinedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("RoomId")
@@ -63,7 +66,7 @@ namespace NockChat.Persistence.Migrations
                     b.Property<int>("RoomId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTimeOffset>("SentAt")
+                    b.Property<DateTime>("SentAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Text")
@@ -88,13 +91,13 @@ namespace NockChat.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("InviteCode")
                         .HasColumnType("text");
 
-                    b.Property<DateTimeOffset?>("InviteCodeExpiresAt")
+                    b.Property<DateTime?>("InviteCodeExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")

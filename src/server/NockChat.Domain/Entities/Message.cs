@@ -18,7 +18,7 @@
         /// <summary>
         /// Дата и время отправки сообщения (UTC)
         /// </summary>
-        public DateTime SentAt { get; set; }
+        public DateTimeOffset SentAt { get; set; }
 
         /// <summary>
         /// Идентификатор комнаты, в которой отправлено сообщение

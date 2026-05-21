@@ -18,7 +18,7 @@
         /// <summary>
         /// Дата и время входа пользователя в комнату (UTC)
         /// </summary>
-        public DateTime JoinedAt { get; set; }
+        public DateTimeOffset JoinedAt { get; set; }
 
         /// <summary>
         /// Идентификатор комнаты, к которой принадлежит пользователь

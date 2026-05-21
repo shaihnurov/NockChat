@@ -9,9 +9,9 @@ namespace NockChat.Application.Rooms.Commands.JoinRoom
     /// <summary>
     /// Команда для входа пользователя в существующую комнату чата
     /// </summary>
-    /// <param name="AccessCode">Код доступа к комнате</param>
+    /// <param name="InviteCode">Код доступа к комнате</param>
     /// <param name="Username">Имя пользователя, входящего в комнату</param>
-    public record JoinRoomCommand(string AccessCode, string Username) : IRequest<JoinRoomResponse>;
+    public record JoinRoomCommand(string InviteCode, string Username) : IRequest<JoinRoomResponse>;
 
     /// <summary>
     /// Обработчик <see cref="JoinRoomCommand"/>
@@ -29,7 +29,7 @@ namespace NockChat.Application.Rooms.Commands.JoinRoom
         /// <exception cref="ConflictException">Имя пользователя уже занято в этой комнате</exception>
         public async Task<JoinRoomResponse> Handle(JoinRoomCommand request, CancellationToken ct)
         {
-            var room = await roomRepository.GetByAccessCodeAsync(request.AccessCode, ct) ?? throw new NotFoundException($"Комната не найдена");
+            var room = await roomRepository.GetByInviteCodeAsync(request.InviteCode, ct) ?? throw new NotFoundException("Комната не найдена или код истёк");
 
             var userExists = await chatUserRepository.ExistsAsync(room.Id, request.Username, ct);
             if (userExists)

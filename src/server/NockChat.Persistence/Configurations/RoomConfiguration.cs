@@ -15,8 +15,6 @@ namespace NockChat.Persistence.Configurations
         {
             builder.HasKey(r => r.Id);
 
-            builder.HasIndex(r => r.AccessCode).IsUnique();
-
             builder.Property(r => r.Name).IsRequired().HasMaxLength(100);
 
             builder.HasMany(r => r.Messages).WithOne(m => m.Room).HasForeignKey(m => m.RoomId).OnDelete(DeleteBehavior.Cascade);

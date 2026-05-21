@@ -29,7 +29,6 @@ namespace NockChat.Application.Rooms.Commands.CreateRoom
             var room = new Room
             {
                 Name = request.Name,
-                AccessCode = GenerateAccessCode(),
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -46,21 +45,7 @@ namespace NockChat.Application.Rooms.Commands.CreateRoom
 
             var token = tokenService.GenerateToken(createdUser.Id, createdRoom.Id, createdRoom.Name, createdUser.Username);
 
-            return new CreateRoomResponse(createdRoom.Name, createdRoom.AccessCode, createdUser.Username, token);
-        }
-
-        /// <summary>
-        /// Генерирует случайный код доступа к комнате в формате <c>XXXX-XXXX</c>
-        /// из символов верхнего регистра и цифр (без визуально схожих знаков)
-        /// </summary>
-        /// <returns>Код доступа в формате <c>XXXX-XXXX</c></returns>
-        private static string GenerateAccessCode()
-        {
-            const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-            var random = new Random();
-            var part1 = new string([.. Enumerable.Range(0, 4).Select(_ => chars[random.Next(chars.Length)])]);
-            var part2 = new string([.. Enumerable.Range(0, 4).Select(_ => chars[random.Next(chars.Length)])]);
-            return $"{part1}-{part2}";
+            return new CreateRoomResponse(createdRoom.Name, createdUser.Username, token);
         }
     }
 }

@@ -16,14 +16,19 @@
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Уникальный код доступа к комнате в формате <c>XXXX-XXXX</c>
-        /// </summary>
-        public string AccessCode { get; set; } = string.Empty;
-
-        /// <summary>
         /// Дата и время создания комнаты (UTC)
         /// </summary>
-        public DateTime CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+
+        /// <summary>
+        /// Временный код приглашения для доступа в комнату, действующий до <see cref="InviteCodeExpiresAt"/>
+        /// </summary>
+        public string? InviteCode { get; set; }
+
+        /// <summary>
+        /// Время действия кода приглашения
+        /// </summary>
+        public DateTimeOffset? InviteCodeExpiresAt { get; set; }
 
         /// <summary>
         /// Коллекция сообщений в комнате

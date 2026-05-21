@@ -5,5 +5,5 @@
     /// </summary>
     /// <param name="Username">Имя пользователя</param>
     /// <param name="JoinedAt">Дата и время вступления в комнату</param>
-    public record RoomUsersResponse(string Username, DateTime JoinedAt);
+    public record RoomUsersResponse(string Username, DateTimeOffset JoinedAt);
 }
