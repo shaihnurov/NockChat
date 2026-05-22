@@ -1,6 +1,4 @@
-﻿using Mapster;
-using MapsterMapper;
-using MediatR;
+﻿using MediatR;
 using NockChat.Application.Common.Exceptions;
 using NockChat.Application.Common.Interfaces;
 using NockChat.Application.DTOs.Responses;
@@ -14,14 +12,14 @@ namespace NockChat.Application.Messages.Commands.SendMessage
     /// <param name="RoomId">Идентификатор комнаты</param>
     /// <param name="ChatUserId">Идентификатор отправителя</param>
     /// <param name="Text">Текст сообщения</param>
-    public record SendMessageCommand(int RoomId, int ChatUserId, string Text) : IRequest<MessageResponse>;
+    public record SendMessageCommand(int RoomId, int ChatUserId, string Text, string ConnectionId) : IRequest<MessageResponse>;
 
     /// <summary>
     /// Обработчик <see cref="SendMessageCommand"/>. Сохраняет сообщение в базе данных
     /// и рассылает его участникам комнаты через <see cref="IChatNotificationService"/>
     /// </summary>
     public class SendMessageCommandHandler(IMessageRepository messageRepository, IChatUserRepository chatUserRepository,
-        IChatNotificationService chatNotification, IMapper mapper) : IRequestHandler<SendMessageCommand, MessageResponse>
+        IChatNotificationService chatNotification) : IRequestHandler<SendMessageCommand, MessageResponse>
     {
         /// <summary>
         /// Проверяет принадлежность пользователя к комнате, создаёт сообщение
@@ -45,9 +43,16 @@ namespace NockChat.Application.Messages.Commands.SendMessage
             };
 
             var created = await messageRepository.CreateAsync(message, ct);
-            var response = (created, chatUser.Username).Adapt<MessageResponse>(mapper.Config);
 
-            await chatNotification.SendMessageAsync(request.RoomId, response, ct);
+            var response = new MessageResponse(
+                Id: created.Id,
+                Text: created.Text,
+                Username: chatUser.Username,
+                IsOwn: false,
+                SentAt: created.SentAt
+            );
+
+            await chatNotification.SendMessageAsync(request.RoomId, request.ConnectionId, response, ct);
             return response with { IsOwn = true };
         }
     }

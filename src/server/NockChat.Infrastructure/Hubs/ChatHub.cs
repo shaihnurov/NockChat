@@ -42,6 +42,6 @@ namespace NockChat.Infrastructure.Hubs
         /// </summary>
         /// <param name="text">Текст отправляемого сообщения</param>
         public async Task SendMessage(string text)
-            => await mediator.Send(new SendMessageCommand(RoomId, ChatUserId, text));
+            => await mediator.Send(new SendMessageCommand(RoomId, ChatUserId, text, Context.ConnectionId));
     }
 }

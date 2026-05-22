@@ -13,7 +13,7 @@ namespace NockChat.Application.Common.Interfaces
         /// <param name="roomId">Идентификатор комнаты</param>
         /// <param name="message">Данные отправляемого сообщения</param>
         /// <param name="ct">Токен</param>
-        Task SendMessageAsync(int roomId, MessageResponse message, CancellationToken ct = default);
+        Task SendMessageAsync(int roomId, string senderConnectionId, MessageResponse message, CancellationToken ct = default);
 
         /// <summary>
         /// Уведомляет участников комнаты о подключении нового пользователя

@@ -12,8 +12,8 @@ namespace NockChat.Infrastructure.Services
     public class ChatNotificationService(IHubContext<ChatHub, IChatHubClient> hubContext) : IChatNotificationService
     {
         /// <inheritdoc/>
-        public async Task SendMessageAsync(int roomId, MessageResponse message, CancellationToken ct = default)
-            => await hubContext.Clients.Group(roomId.ToString()).ReceiveMessage(message);
+        public async Task SendMessageAsync(int roomId, string senderConnectionId, MessageResponse message, CancellationToken ct = default)
+            => await hubContext.Clients.GroupExcept(roomId.ToString(), senderConnectionId).ReceiveMessage(message);
 
         /// <inheritdoc/>
         public async Task NotifyUserJoinedAsync(int roomId, string username, CancellationToken ct = default)
