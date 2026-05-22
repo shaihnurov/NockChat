@@ -34,11 +34,17 @@ public partial class ChatView : UserControl
 
     private void ScrollToBottom(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        var scroll = this.FindControl<ScrollViewer>("MessagesScroll");
+        if (e.Action != NotifyCollectionChangedAction.Add)
+            return;
 
+        var scroll = this.FindControl<ScrollViewer>("MessagesScroll");
         if (scroll == null)
             return;
 
-        Dispatcher.UIThread.Post(() => scroll.ScrollToEnd(), DispatcherPriority.Loaded);
+        var vm = DataContext as ChatViewModel;
+        var isNearBottom = scroll.Extent.Height - scroll.Offset.Y - scroll.Viewport.Height < 100;
+
+        if (vm?.IsSendingMessage == true || isNearBottom)
+            Dispatcher.UIThread.Post(() => scroll.ScrollToEnd(), DispatcherPriority.Loaded);
     }
 }

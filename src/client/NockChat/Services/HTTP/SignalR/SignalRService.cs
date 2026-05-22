@@ -26,8 +26,6 @@ namespace NockChat.Services.HTTP.SignalR
 
             _connection = new HubConnectionBuilder().WithUrl($"{_hubUrl}?access_token={token}").WithAutomaticReconnect().Build();
 
-            RegisterHandlers();
-
             try
             {
                 await _connection.StartAsync(ct);
@@ -68,7 +66,7 @@ namespace NockChat.Services.HTTP.SignalR
             if (string.IsNullOrEmpty(_activeToken))
                 throw new InvalidOperationException("Token is missing. Call ConnectAsync first.");
 
-            await _connection.InvokeAsync("SendMessage", text, ct);
+            await _connection.InvokeAsync("SendMessage", text, cancellationToken: ct);
         }
 
         public void OnMessageReceived(Action<MessageModel> handler)
@@ -79,11 +77,6 @@ namespace NockChat.Services.HTTP.SignalR
 
         public void OnUserLeft(Action<string> handler)
             => _connection?.On("UserLeft", handler);
-
-        private void RegisterHandlers()
-        {
-            _connection?.On<MessageModel>("ReceiveMessage", msg => logger.LogDebug("Получено сообщение от {Username}", msg.Username));
-        }
 
         public async ValueTask DisposeAsync()
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,11 +31,9 @@ namespace NockChat.ViewModels
         [ObservableProperty]
         public partial bool IsConnecting { get; set; }
 
-        [ObservableProperty]
-        public partial bool IsAccessCodeVisible { get; set; }
+        internal bool IsSendingMessage { get; private set; }
 
         public string RoomName => session.RoomName;
-        public string Username => session.Username;
 
         public override async Task Initialize()
         {
@@ -43,19 +42,14 @@ namespace NockChat.ViewModels
                 appUiState.IsActiveToggleMenu = false;
                 IsConnecting = true;
 
-                // Загружаем историю
                 var result = await messageService.GetMessagesAsync(session.Token, 1, 100);
                 if (result != null)
                     Messages = new ObservableCollection<MessageModel>(result.Items);
 
-                // Подключаемся к SignalR
                 await signalRService.ConnectAsync(session.Token);
                 signalRService.OnMessageReceived(msg =>
                 {
-                    if (msg.Username == session.Username)
-                        return;
-
-                    Messages.Add(msg);
+                    Dispatcher.UIThread.Post(() => Messages.Add(msg));
                 });
 
                 IsConnecting = false;
@@ -83,7 +77,9 @@ namespace NockChat.ViewModels
                 IsOwn = true
             };
 
+            IsSendingMessage = true;
             Messages.Add(optimisticMessage);
+            IsSendingMessage = false;
 
             try
             {
@@ -96,9 +92,6 @@ namespace NockChat.ViewModels
                 notificationService.ShowError("Не удалось отправить сообщение");
             }
         }
-
-        [RelayCommand]
-        private void ToggleAccessCode() => IsAccessCodeVisible = !IsAccessCodeVisible;
 
         [RelayCommand]
         private async Task LeaveRoom()

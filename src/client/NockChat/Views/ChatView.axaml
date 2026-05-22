@@ -21,7 +21,14 @@
                     <avalonia:MaterialIcon Kind="ArrowLeft" Width="20" Height="20"/>
                 </Button>
 
-                <TextBlock Grid.Column="1" Text="{Binding RoomName, Mode=OneWay}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="{Binding RoomName, Mode=OneWay}" VerticalAlignment="Center"
+                           IsVisible="{Binding !IsConnecting, Mode=OneWay}"/>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" IsVisible="{Binding IsConnecting, Mode=OneWay}"
+                            Spacing="6">
+                    <u:LoadingIcon />
+                    <TextBlock Text="Подключение..." VerticalAlignment="Center" Margin="0 4 0 0"/>
+                </StackPanel>
 
                 <Button Grid.Column="2" Command="{Binding OptionsCommand}"
                         Background="Transparent" CornerRadius="12" Padding="8"
@@ -82,13 +89,17 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <StackPanel IsVisible="{Binding IsConnecting, Mode=OneWay}"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Spacing="12">
-            <u:LoadingIcon />
-            <TextBlock Text="Подключение..." HorizontalAlignment="Center"/>
-        </StackPanel>
+        <Border IsVisible="{Binding !Messages.Count, Mode=OneWay}"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                CornerRadius="15" Padding="20"
+                Background="{DynamicResource SemiGrey1}">
+            <StackPanel Spacing="10">
+                <TextBlock Text="Сообщений нет..." FontWeight="Light" FontSize="16"/>
+
+                <TextBlock Text="Начните общение отправив сообщение" FontWeight="Light" FontSize="14"
+                            Foreground="{DynamicResource SemiColorText2}"/>
+            </StackPanel>
+        </Border>
 
         <Border VerticalAlignment="Bottom" HorizontalAlignment="Center"
                 BorderBrush="{DynamicResource SemiAIGeneral1}" BorderThickness="1"
