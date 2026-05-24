@@ -73,29 +73,27 @@ public partial class App : Application
                     "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
             .CreateLogger();
 #else
-            string logsPath = Path.Combine(AppPaths.LogFolder, "log-.log");
+        string logsPath = Path.Combine(AppPaths.LogFolder, "log-.log");
 
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
-
-                .Enrich.WithMachineName()
-                .Enrich.WithProcessId()
-                .Enrich.WithThreadId()
-                .Enrich.With<ExceptionEnricher>()
-                .WriteTo.File(
-                    logsPath,
-                    rollingInterval: RollingInterval.Day,
-                    retainedFileCountLimit: 7,
-                    outputTemplate:
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
+            .Enrich.WithMachineName()
+            .Enrich.WithProcessId()
+            .Enrich.WithThreadId()
+            .Enrich.With<ExceptionEnricher>()
+            .WriteTo.File(
+                logsPath,
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 7,
+                outputTemplate:
                     "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} " +
                     "{ErrorType} {ErrorId} {ErrorMessage}{NewLine}")
-                .CreateLogger();
+            .CreateLogger();
 #endif
 
         _host.Services.GetRequiredService<ILoggerFactory>().AddSerilog();
-
         _logger = _host.Services.GetRequiredService<ILogger<App>>();
 
         await _host.StartAsync();
@@ -139,9 +137,8 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// Завершает все активные процессы и закрывает приложение
+    /// Корректно завершает SignalR-соединение, останавливает хост и закрывает приложение
     /// </summary>
-    /// <param name="desktop"></param>
     private async Task ShutdownAsync(IClassicDesktopStyleApplicationLifetime desktop)
     {
         if (_host is null)
@@ -169,6 +166,9 @@ public partial class App : Application
         }
     }
 
+    /// <summary>
+    /// Загружает настройки, применяет тему и выполняет начальную навигацию на главную страницу
+    /// </summary>
     private async Task StartApplication()
     {
         var settingsService = _host!.Services.GetRequiredService<ISettingsService>();
@@ -188,6 +188,6 @@ public partial class App : Application
         });
 
         await navigation.RequestNavigation<HomeViewModel>();
-        appUiState.IsActiveToggleMenu = true;
+        appUiState.IsVisibleMenu = true;
     }
 }

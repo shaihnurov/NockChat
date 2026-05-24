@@ -12,7 +12,7 @@ namespace NockChat.ViewModels.SupportedViews
         /// Основной текст для вывода информации при инициализация клиента
         /// </summary>
         [ObservableProperty]
-        private string _startUpMessage = string.Empty;
+        public partial string StartUpMessage { get; set; } = string.Empty;
 
         private readonly CancellationTokenSource _cts = new();
         public CancellationToken CancellationToken => _cts.Token;

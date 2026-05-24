@@ -8,12 +8,12 @@ namespace NockChat.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
-    #region Зависимости
+    #region Dependencies
     public IAppUiState AppUiState { get; }
     private readonly INavigationService _navigationService;
     #endregion
 
-    #region Свойства
+    #region Properties
     /// <summary>
     /// Текущий установленный UserControl
     /// </summary>
@@ -33,8 +33,8 @@ public partial class MainViewModel : ViewModelBase
         _navigationService.PageChanged += vm => CurrentPage = vm;
     }
 
-    #region Методы
-    #region Навигация
+    #region Methods
+    #region Navigation Commands
     /// <summary>
     /// Команда для переключения на главную страницу
     /// </summary>
@@ -44,7 +44,7 @@ public partial class MainViewModel : ViewModelBase
     /// </summary>
     public RelayCommand RedirectionSettingsCommand => new(async () => await _navigationService.RequestNavigation<HomeViewModel>());
     /// <summary>
-    /// Команда для переключения на страницу личного кабинета
+    /// Команда для переключения на страницу списка чатов
     /// </summary>
     public RelayCommand RedirectionChatListCommand => new(async () => await _navigationService.RequestNavigation<ChatListViewModel>());
     #endregion

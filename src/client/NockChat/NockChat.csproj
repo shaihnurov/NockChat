@@ -44,10 +44,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Enums\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Views\ChatListView.axaml.cs">
       <DependentUpon>ChatListView.axaml</DependentUpon>
     </Compile>

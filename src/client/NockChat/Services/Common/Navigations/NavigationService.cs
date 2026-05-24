@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using NockChat.Services.Attributes;
+using NockChat.Services.Common.DependencyInjection;
 using NockChat.Services.Common.Extensions;
-using NockChat.Services.Common.Extensions.Navigations;
 using NockChat.Services.Common.UI;
 using NockChat.ViewModels;
 
@@ -18,7 +18,7 @@ namespace NockChat.Services.Common.Navigations
     public partial class NavigationService(IServiceProvider serviceProvider, IAppUiState appUiState) : ObservableObject, INavigationService
     {
         /// <summary>
-        /// Кэш атрибутов конфигурации страниц по типу ViewModel.
+        /// Кэш атрибутов конфигурации страниц по типу ViewModel
         /// Используется для ускорения доступа к информации о заголовке и активности меню
         /// </summary>
         private static readonly Dictionary<Type, ViewAttribute> _viewAttributeConfigs = [];

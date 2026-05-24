@@ -9,7 +9,6 @@ namespace NockChat.Services.Common.Converters
 {
     /// <summary>
     /// Конвертер, который отображает значения перечислений (<see cref="Enum"/>)
-    /// в человекочитаемые имена, используя атрибут <see cref="DisplayAttribute"/>.
     /// </summary>
     /// <remarks>
     /// Если у значения перечисления указан <see cref="DisplayAttribute"/>, возвращается его Name;

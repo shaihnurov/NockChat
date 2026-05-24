@@ -29,11 +29,6 @@ namespace NockChat.Services.Common.Extensions
         public static readonly string DataFolder = Path.Combine(BaseFolder, "cached");
 
         /// <summary>
-        /// Путь к каталогу, содержащему шаблоны конфигураций или документов
-        /// </summary>
-        public static readonly string TemplatesFolder = Path.Combine(DataFolder, "templates");
-
-        /// <summary>
         /// Путь к каталогу для кэширования или хранения изображений
         /// </summary>
         public static readonly string ImageFolder = Path.Combine(DataFolder, "images");
@@ -43,7 +38,6 @@ namespace NockChat.Services.Common.Extensions
             EnsureDirectory(BaseFolder);
             EnsureDirectory(LogFolder);
             EnsureDirectory(DataFolder);
-            EnsureDirectory(TemplatesFolder);
             EnsureDirectory(ImageFolder);
         }
 

@@ -9,22 +9,10 @@ namespace NockChat.Services.Common.UI
     {
         /// <inheritdoc/>
         [ObservableProperty]
-        private bool _hasError;
+        public partial string? TitlePage { get; set; }
 
         /// <inheritdoc/>
         [ObservableProperty]
-        private bool _hasConnection;
-
-        /// <inheritdoc/>
-        [ObservableProperty]
-        private string? _statusBarMessage;
-
-        /// <inheritdoc/>
-        [ObservableProperty]
-        public string? _titlePage;
-
-        /// <inheritdoc/>
-        [ObservableProperty]
-        public bool _isActiveToggleMenu;
+        public partial bool IsVisibleMenu { get; set; }
     }
 }

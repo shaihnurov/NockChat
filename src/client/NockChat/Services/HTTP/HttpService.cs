@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using NockChat.Services.Common.Exceptions;
 using NockChat.Services.HTTP.Network;
 using NockChat.Services.HTTP.Options;
 
@@ -29,40 +30,36 @@ namespace NockChat.Services.HTTP
         };
 
         /// <inheritdoc />
-        public Task<(bool Success, T? Data, string? ErrorMessage)> GetAsync<T>(string endpoint, CancellationToken ct = default)
+        public Task<T> GetAsync<T>(string endpoint, CancellationToken ct = default)
             => SendAsync<T>(HttpMethod.Get, endpoint, ct: ct);
 
         /// <inheritdoc />
-        public Task<(bool Success, T? Data, string? ErrorMessage)> GetAsync<T>(string endpoint, string token, CancellationToken ct = default)
+        public Task<T> GetAsync<T>(string endpoint, string token, CancellationToken ct = default)
             => SendAsync<T>(HttpMethod.Get, endpoint, token: token, ct: ct);
 
         /// <inheritdoc />
-        public Task<(bool Success, T? Data, string? ErrorMessage)> PostAsync<T>(string endpoint, object body, CancellationToken ct = default)
+        public Task<T> PostAsync<T>(string endpoint, object body, CancellationToken ct = default)
             => SendAsync<T>(HttpMethod.Post, endpoint, body, ct: ct);
 
         /// <inheritdoc />
-        public Task<(bool Success, T? Data, string? ErrorMessage)> PostAsync<T>(string endpoint, object body, string token, CancellationToken ct = default)
+        public Task<T> PostAsync<T>(string endpoint, object body, string token, CancellationToken ct = default)
             => SendAsync<T>(HttpMethod.Post, endpoint, body: body, token: token, ct: ct);
 
         /// <inheritdoc />
-        public Task<(bool Success, T? Data, string? ErrorMessage)> PutAsync<T>(string endpoint, object body, CancellationToken ct = default)
+        public Task<T> PutAsync<T>(string endpoint, object body, CancellationToken ct = default)
             => SendAsync<T>(HttpMethod.Put, endpoint, body, ct: ct);
 
         /// <inheritdoc />
-        public Task<(bool Success, T? Data, string? ErrorMessage)> PatchAsync<T>(string endpoint, object body, CancellationToken ct = default)
+        public Task<T> PatchAsync<T>(string endpoint, object body, CancellationToken ct = default)
             => SendAsync<T>(HttpMethod.Patch, endpoint, body, ct: ct);
 
         /// <inheritdoc />
-        public Task<(bool Success, T? Data, string? ErrorMessage)> DeleteAsync<T>(string endpoint, object? body = null, CancellationToken ct = default)
+        public Task<T> DeleteAsync<T>(string endpoint, object? body = null, CancellationToken ct = default)
             => SendAsync<T>(HttpMethod.Delete, endpoint, body, ct: ct);
 
         /// <inheritdoc />
-        public Task<(bool Success, T? Data, string? ErrorMessage)> DeleteAsync<T>(string endpoint, string token, object? body = null, CancellationToken ct = default)
+        public Task<T> DeleteAsync<T>(string endpoint, string token, object? body = null, CancellationToken ct = default)
             => SendAsync<T>(HttpMethod.Delete, endpoint, token: token, body: body, ct: ct);
-
-        /// <inheritdoc />
-        public async Task<(bool Success, T? Data, string? ErrorMessage)> PostMultipartAsync<T>(string endpoint, MultipartFormDataContent multipart, CancellationToken ct = default)
-            => await SendAsync<T>(HttpMethod.Post, endpoint, httpContent: multipart, ct: ct);
 
         /// <inheritdoc />
         public async Task<Stream> GetStreamAsync(string requestUri, CancellationToken ct = default)
@@ -84,41 +81,45 @@ namespace NockChat.Services.HTTP
         /// <summary>
         /// Единая точка отправки всех HTTP-запросов
         /// </summary>
-        private async Task<(bool Success, T? Data, string? ErrorMessage)> SendAsync<T>(HttpMethod method, string endpoint, object? body = null,
-            HttpContent? httpContent = null, string? token = null, CancellationToken ct = default)
+        private async Task<T> SendAsync<T>(HttpMethod method, string endpoint, object? body = null,
+            string? token = null, CancellationToken ct = default)
         {
             if (!networkService.IsOnline)
-            {
-                logger.LogDebug("Запрос [{Method} {Endpoint}] пропущен — нет сети", method, endpoint);
-                return (false, default, NetworkErrors.NoConnection);
-            }
+                throw new NetworkException(NetworkErrors.NoConnection);
 
             try
             {
-                using var request = BuildRequest(method, endpoint, body, httpContent, token);
-
-                using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait(false);
+                using var request = BuildRequest(method, endpoint, body, null, token);
+                using var response = await httpClient.SendAsync(request, ct);
 
                 return await ProcessResponseAsync<T>(response, ct);
             }
+            catch (NetworkException)
+            {
+                throw;
+            }
+            catch (ServerException)
+            {
+                throw;
+            }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
-                return (false, default, "Запрос отменён");
+                throw new NetworkException(NetworkErrors.Cancelled);
             }
             catch (OperationCanceledException)
             {
-                logger.LogError("Таймаут запроса к серверу");
-                return (false, default, "Таймаут запроса к серверу");
+                logger.LogError("Таймаут запроса [{Method} {Endpoint}]", method, endpoint);
+                throw new NetworkException(NetworkErrors.Timeout);
             }
             catch (HttpRequestException ex)
             {
-                logger.LogError(ex, "Ошибка подключения к серверу");
-                return (false, default, "Ошибка подключения к серверу");
+                logger.LogError(ex, "Ошибка подключения [{Method} {Endpoint}]", method, endpoint);
+                throw new NetworkException(NetworkErrors.ServerUnavailable);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Неизвестная ошибка при выполнении запроса");
-                return (false, default, "Неизвестная ошибка при выполнении запроса");
+                logger.LogError(ex, "Неизвестная ошибка [{Method} {Endpoint}]", method, endpoint);
+                throw new NetworkException(NetworkErrors.UnknownError);
             }
         }
 
@@ -138,9 +139,9 @@ namespace NockChat.Services.HTTP
             return request;
         }
 
-        private async Task<(bool Success, T? Data, string? ErrorMessage)> ProcessResponseAsync<T>(HttpResponseMessage response, CancellationToken ct)
+        private async Task<T> ProcessResponseAsync<T>(HttpResponseMessage response, CancellationToken ct)
         {
-            var body = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+            var body = await response.Content.ReadAsStringAsync(ct);
 
 #if DEBUG
             logger.LogInformation("{Body}", System.Text.RegularExpressions.Regex.Unescape(body));
@@ -149,18 +150,20 @@ namespace NockChat.Services.HTTP
             if (!response.IsSuccessStatusCode)
             {
                 var errorMessage = ExtractErrorMessage(body);
-                logger.LogError("[{StatusCode}]: {ErrorMessage}", response.StatusCode, errorMessage);
-                return (false, default, errorMessage);
+                throw new ServerException(errorMessage, (int)response.StatusCode);
             }
+
+            if (typeof(T) == typeof(object))
+                return default!;
 
             try
             {
-                return (true, JsonConvert.DeserializeObject<T>(body, SerializerSettings), null);
+                return JsonConvert.DeserializeObject<T>(body, SerializerSettings) ?? throw new DeserializationException(NetworkErrors.DeserializationError);
             }
             catch (JsonException ex)
             {
-                logger.LogError(ex, "Ошибка десериализации JSON: {Body}", body);
-                return (false, default, "Ошибка десериализации ответа от сервера");
+                logger.LogError(ex, "Ошибка десериализации: {Body}", body);
+                throw new DeserializationException(NetworkErrors.DeserializationError);
             }
         }
 
@@ -192,9 +195,7 @@ namespace NockChat.Services.HTTP
             }
             catch
             {
-                return responseBody.Length > 200
-                    ? string.Concat(responseBody.AsSpan(0, 200), "...")
-                    : responseBody;
+                return responseBody.Length > 200 ? string.Concat(responseBody.AsSpan(0, 200), "...") : responseBody;
             }
         }
     }

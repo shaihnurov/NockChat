@@ -2,8 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NockChat.Services.Common.DataStorage.Sessions;
 using NockChat.Services.Common.DataStorage.Settings;
-using NockChat.Services.Common.Extensions.Debounce;
-using NockChat.Services.Common.Extensions.Navigations;
 using NockChat.Services.Common.Factory;
 using NockChat.Services.Common.Navigations;
 using NockChat.Services.Common.Notifications;
@@ -45,7 +43,6 @@ namespace NockChat.Services.Common.DependencyInjection
         /// </summary>
         public static IServiceCollection AddTransientServices(this IServiceCollection services)
         {
-            services.AddTransient<IDebounceDispatcher, DebounceDispatcher>();
             services.AddTransient<IRoomRequestsService, RoomRequestsService>();
             services.AddTransient<IMessageRequestsService, MessageRequestsService>();
             services.AddTransient(typeof(IViewModelFactory<>), typeof(ViewModelFactory<>));

@@ -16,10 +16,6 @@ namespace NockChat.Services.Common.Factory
         private readonly IServiceProvider _serviceProvider = serviceProvider;
 
         /// <inheritdoc />
-        public T Create(params object[] parameters)
-        {
-            // Создает экземпляр ViewModel, используя DI-контейнер и переданные параметры
-            return ActivatorUtilities.CreateInstance<T>(_serviceProvider, parameters);
-        }
+        public T Create(params object[] parameters) => ActivatorUtilities.CreateInstance<T>(_serviceProvider, parameters);
     }
 }

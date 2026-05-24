@@ -14,12 +14,12 @@ namespace NockChat.Services.Common.DataStorage.Settings
         AppSettingsModel Settings { get; }
 
         /// <summary>
-        /// Загружает настройки из хранилища
+        /// Загружает настройки из файла хранилища
         /// </summary>
         Task LoadAsync();
 
         /// <summary>
-        /// Сохраняет текущие настройки в хранилище
+        /// Сохраняет текущие настройки в файл хранилища
         /// </summary>
         Task SaveAsync();
     }

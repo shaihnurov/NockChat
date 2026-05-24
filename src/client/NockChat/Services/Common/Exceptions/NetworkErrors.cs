@@ -1,4 +1,4 @@
-﻿namespace NockChat.Services.HTTP.Network
+﻿namespace NockChat.Services.Common.Exceptions
 {
     /// <summary>
     /// Константы сетевых ошибок для единообразной обработки во всём приложении

@@ -10,7 +10,7 @@ using NockChat.Services.Common.Extensions;
 namespace NockChat.Services.Common.DataStorage.Settings
 {
     /// <summary>
-    /// Реализация сервиса для управления настройками приложения
+    /// Реализация сервиса настроек на основе JSON-файла
     /// </summary>
     public class SettingsService : ISettingsService
     {
@@ -25,20 +25,18 @@ namespace NockChat.Services.Common.DataStorage.Settings
         private readonly string _filePath;
 
         /// <summary>
-        /// Текущие настройки приложения из файла
+        /// Текущие настройки, загруженные из файла
         /// </summary>
         private AppSettingsModel _currentSettings;
 
         /// <summary>
-        /// Семафор для синхронизации доступа к файлу настроек.
-        /// Обеспечивает потокобезопасность, предотвращая одновременную запись или чтение файла из разных потоков
+        /// Семафор для потокобезопасного доступа к файлу настроек
         /// </summary>
         private readonly SemaphoreSlim _fileLock = new(1, 1);
 
         /// <summary>
-        /// Настройки сериализации JSON.
-        /// Экземпляр кэшируется как статический, чтобы избежать накладных расходов на повторную инициализацию
-        /// и анализ типов (рефлексию) при каждой операции сохранения или загрузки
+        /// Настройки сериализации JSON
+        /// Кэшируется статически, чтобы избежать повторной инициализации и рефлексии при каждом вызове
         /// </summary>
         private static readonly JsonSerializerOptions SerializerOptions = new()
         {
@@ -60,7 +58,7 @@ namespace NockChat.Services.Common.DataStorage.Settings
         public async Task LoadAsync()
         {
             await _fileLock.WaitAsync();
-
+            
             try
             {
                 if (!File.Exists(_filePath))
