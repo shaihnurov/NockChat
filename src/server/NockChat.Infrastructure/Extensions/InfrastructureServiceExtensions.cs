@@ -16,7 +16,11 @@ namespace NockChat.Infrastructure.Extensions
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSignalR();
+
+            services.AddSingleton<IChatCryptoService, ChatCryptoService>();
+
             services.AddTransient<ITokenService, TokenService>();
+
             services.AddScoped<IChatNotificationService, ChatNotificationService>();
             services.AddScoped<IUserContext, UserContext>();
 

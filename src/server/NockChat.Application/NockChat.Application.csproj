@@ -14,8 +14,6 @@
 
   <ItemGroup>
     <Folder Include="Messages\Commands\" />
-    <Folder Include="Users\Commands\" />
-    <Folder Include="Users\Queries\" />
   </ItemGroup>
 
   <PropertyGroup>

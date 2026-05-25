@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using NockChat.Application.Rooms.Commands.CreateRoom;
 using NockChat.Application.Rooms.Commands.DeleteRoom;
 using NockChat.Application.Rooms.Commands.JoinRoom;
 using NockChat.Application.Rooms.Queries;
+using NockChat.Application.Users.Queries;
 
 namespace NockChat.Api.Controllers.V1
 {
@@ -42,6 +44,18 @@ namespace NockChat.Api.Controllers.V1
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<InviteCodeResponse>> GetInviteCode(CancellationToken ct)
             => Ok(await mediator.Send(new GetInviteCodeQuery(), ct));
+
+        /// <summary>
+        /// Возвращает публичные ключи всех участников комнаты.
+        /// Используется при переподключении, когда SignalR сессия была потеряна.
+        /// </summary>
+        /// <param name="ct">Токен отмены операции</param>
+        /// <returns>Список публичных ключей участников комнаты</returns>
+        [HttpGet("keys")]
+        [ProducesResponseType(typeof(IReadOnlyList<RoomKeyResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<IReadOnlyList<RoomKeyResponse>>> GetRoomKeys(CancellationToken ct)
+            => Ok(await mediator.Send(new GetRoomKeysQuery(), ct));
 
         /// <summary>
         /// Создаёт новую комнату чата и возвращает код доступа к ней

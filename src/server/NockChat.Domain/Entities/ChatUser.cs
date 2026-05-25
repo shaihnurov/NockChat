@@ -34,5 +34,10 @@
         /// Коллекция сообщений, отправленных пользователем
         /// </summary>
         public ICollection<Message> Messages { get; set; } = [];
+
+        /// <summary>
+        /// Публичный ключ пользователя для E2E шифрования в данной комнате
+        /// </summary>
+        public ParticipantKey? ParticipantKey { get; set; }
     }
 }

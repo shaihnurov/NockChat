@@ -24,5 +24,17 @@ namespace NockChat.Application.Common.Interfaces
         /// </summary>
         /// <param name="username">Имя отключившегося пользователя</param>
         Task UserLeft(string username);
+
+        /// <summary>
+        /// Отправляет вызывающему клиенту ключи всех участников, уже находящихся в комнате
+        /// Вызывается единожды сразу после PublishKey — клиент устанавливает крипто-сессии
+        /// </summary>
+        Task ReceiveRoomKeys(IReadOnlyList<RoomKeyResponse> keys);
+
+        /// <summary>
+        /// Уведомляет участников комнаты о новом участнике и его публичном ключе
+        /// Каждый получатель устанавливает крипто-сессию с новым участником
+        /// </summary>
+        Task ParticipantKeyPublished(RoomKeyResponse key);
     }
 }

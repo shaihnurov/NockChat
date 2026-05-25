@@ -23,6 +23,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     /// </summary>
     public DbSet<ChatUser> ChatUsers => Set<ChatUser>();
 
+    /// <summary>
+    /// Таблица ключей шифрования участников
+    /// </summary>
+    public DbSet<ParticipantKey> ParticipantKeys => Set<ParticipantKey>();
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

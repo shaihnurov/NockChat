@@ -39,5 +39,10 @@
         /// Коллекция пользователей, присоединившихся к комнате
         /// </summary>
         public ICollection<ChatUser> ChatUsers { get; set; } = [];
+
+        /// <summary>
+        /// Коллекция публичных ключей участников комнаты
+        /// </summary>
+        public ICollection<ParticipantKey> ParticipantKeys { get; set; } = [];
     }
 }

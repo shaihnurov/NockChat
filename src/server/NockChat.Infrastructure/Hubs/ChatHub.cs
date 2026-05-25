@@ -3,7 +3,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using NockChat.Application.Common.Interfaces;
+using NockChat.Application.DTOs.Responses;
 using NockChat.Application.Messages.Commands.SendMessage;
+using NockChat.Application.Users.Commands.PublishKey;
 
 namespace NockChat.Infrastructure.Hubs
 {
@@ -12,7 +14,7 @@ namespace NockChat.Infrastructure.Hubs
     /// Требует авторизации: идентификаторы пользователя и комнаты извлекаются из JWT-клеймов
     /// </summary>
     [Authorize]
-    public class ChatHub(IMediator mediator) : Hub<IChatHubClient>
+    public class ChatHub(IMediator mediator, IParticipantKeyRepository keyRepository) : Hub<IChatHubClient>
     {
         private int ChatUserId => int.Parse(Context.User!.FindFirstValue("chatUserId")!);
         private int RoomId => int.Parse(Context.User!.FindFirstValue("roomId")!);
@@ -33,6 +35,7 @@ namespace NockChat.Infrastructure.Hubs
         /// <param name="exception">Исключение, ставшее причиной разрыва соединения, или <c>null</c> при штатном отключении</param>
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
+            await keyRepository.DeleteAsync(ChatUserId, RoomId);
             await Clients.OthersInGroup(RoomId.ToString()).UserLeft(Username);
             await base.OnDisconnectedAsync(exception);
         }
@@ -43,5 +46,18 @@ namespace NockChat.Infrastructure.Hubs
         /// <param name="text">Текст отправляемого сообщения</param>
         public async Task SendMessage(string text)
             => await mediator.Send(new SendMessageCommand(RoomId, ChatUserId, text, Context.ConnectionId));
+
+        /// <summary>
+        /// Клиент публикует свой ephemeral публичный ключ сразу после подключения
+        /// В ответ получает ключи всех остальных участников комнаты
+        /// </summary>
+        /// <param name="ephemeralPublicKey">Публичный ключ Curve25519 в формате Base64</param>
+        public async Task PublishKey(string ephemeralPublicKey)
+        {
+            var roomKeys = await mediator.Send(new PublishKeyCommand(ephemeralPublicKey));
+
+            await Clients.Caller.ReceiveRoomKeys(roomKeys);
+            await Clients.OthersInGroup(RoomId.ToString()).ParticipantKeyPublished(new RoomKeyResponse(ChatUserId, Username, ephemeralPublicKey));
+        }
     }
 }
