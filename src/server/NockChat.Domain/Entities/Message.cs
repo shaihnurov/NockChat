@@ -11,9 +11,9 @@
         public int Id { get; set; }
 
         /// <summary>
-        /// Текст сообщения
+        /// Зашифрованный payload в формате JSON
         /// </summary>
-        public string Text { get; set; } = string.Empty;
+        public string EncryptedPayload { get; set; } = string.Empty;
 
         /// <summary>
         /// Дата и время отправки сообщения (UTC)

@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Text.Json;
+using MediatR;
 using NockChat.Application.Common.Exceptions;
 using NockChat.Application.Common.Interfaces;
 using NockChat.Application.Common.Pagination;
@@ -19,6 +20,11 @@ namespace NockChat.Application.Messages.Queries
     /// </summary>
     public class GetMessagesHandler(IMessageRepository repository, IUserContext userContext) : IRequestHandler<GetMessagesQuery, PagedResult<MessageResponse>>
     {
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
         /// <summary>
         /// Загружает сообщения комнаты из репозитория и формирует постраничный ответ
         /// </summary>
@@ -36,13 +42,20 @@ namespace NockChat.Application.Messages.Queries
             var (messages, totalCount) = await repository.GetByRoomAsync(roomId, request.Page, request.PageSize, cancellationToken);
 
             var currentUserId = userContext.ChatUserId;
-            var responseItems = messages.Select(m => new MessageResponse(
-                Id: m.Id,
-                Text: m.Text,
-                Username: m.ChatUser?.Username ?? "Unknown",
-                IsOwn: m.ChatUserId == currentUserId,
-                SentAt: m.SentAt
-            )).ToList();
+
+            var responseItems = messages.Select(m =>
+            {
+                var payload = JsonSerializer.Deserialize<EncryptedPayloadResponse>(m.EncryptedPayload, JsonOptions)
+                    ?? throw new InvalidOperationException("Не удалось десериализовать payload");
+
+                return new MessageResponse(
+                    Id: m.Id,
+                    SenderId: m.ChatUserId,
+                    Username: m.ChatUser?.Username ?? "Unknown",
+                    EncryptedPayload: payload,
+                    IsOwn: m.ChatUserId == currentUserId,
+                    SentAt: m.SentAt);
+            }).ToList();
 
             return new PagedResult<MessageResponse>
             {

@@ -17,7 +17,7 @@ namespace NockChat.Application.Users.Commands.PublishKey
 
         private static bool BeValidBase64(string value)
         {
-            if (string.IsNullOrWhiteSpace(value)) 
+            if (string.IsNullOrWhiteSpace(value))
                 return false;
 
             Span<byte> buffer = stackalloc byte[64];

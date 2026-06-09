@@ -16,7 +16,7 @@ namespace NockChat.Persistence.Configurations
 
             builder.HasIndex(m => new { m.RoomId, m.SentAt });
 
-            builder.Property(m => m.Text).IsRequired().HasMaxLength(4000);
+            builder.Property(m => m.EncryptedPayload).IsRequired().HasColumnType("text");
         }
     }
 }

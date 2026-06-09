@@ -17,10 +17,10 @@ namespace NockChat.Persistence.Configurations
             builder.Property(k => k.EphemeralPublicKey).IsRequired().HasMaxLength(64);
             builder.Property(k => k.PublishedAt).IsRequired();
 
-            builder.HasIndex(k => new 
-            { 
-                k.RoomId, 
-                k.ChatUserId 
+            builder.HasIndex(k => new
+            {
+                k.RoomId,
+                k.ChatUserId
             }).IsUnique();
 
             builder.HasOne(k => k.Room).WithMany(r => r.ParticipantKeys).HasForeignKey(k => k.RoomId).OnDelete(DeleteBehavior.Cascade);

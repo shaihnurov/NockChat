@@ -46,7 +46,7 @@ namespace NockChat.Application.Rooms.Commands.JoinRoom
 
             var token = tokenService.GenerateToken(created.Id, room.Id, room.Name, created.Username);
 
-            return new JoinRoomResponse(room.Name, created.Username, token);
+            return new JoinRoomResponse(room.Id, room.Name, created.Username, token);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace NockChat.Application.Rooms.Commands.CreateRoom
 
             var token = tokenService.GenerateToken(createdUser.Id, createdRoom.Id, createdRoom.Name, createdUser.Username);
 
-            return new CreateRoomResponse(createdRoom.Name, createdUser.Username, token);
+            return new CreateRoomResponse(createdRoom.Id, createdRoom.Name, createdUser.Username, token);
         }
     }
 }

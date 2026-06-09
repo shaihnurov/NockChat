@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using NockChat.Application.Common.Interfaces;
+using NockChat.Application.DTOs.Requests;
 using NockChat.Application.DTOs.Responses;
 using NockChat.Application.Messages.Commands.SendMessage;
 using NockChat.Application.Users.Commands.PublishKey;
@@ -44,8 +45,8 @@ namespace NockChat.Infrastructure.Hubs
         /// Принимает текстовое сообщение от клиента и передаёт его в обработчик через MediatR
         /// </summary>
         /// <param name="text">Текст отправляемого сообщения</param>
-        public async Task SendMessage(string text)
-            => await mediator.Send(new SendMessageCommand(RoomId, ChatUserId, text, Context.ConnectionId));
+        public async Task SendMessage(EncryptedPayloadRequest payload)
+            => await mediator.Send(new SendMessageCommand(RoomId, ChatUserId, payload, Context.ConnectionId));
 
         /// <summary>
         /// Клиент публикует свой ephemeral публичный ключ сразу после подключения

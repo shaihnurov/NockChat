@@ -16,7 +16,7 @@ namespace NockChat.Application.Users.Commands.PublishKey
     /// <summary>
     /// Обработчик <see cref="PublishKeyCommand"/>
     /// </summary>
-    public class PublishKeyCommandHandler(IParticipantKeyRepository keyRepository, IUserContext userContext, 
+    public class PublishKeyCommandHandler(IParticipantKeyRepository keyRepository, IUserContext userContext,
         IChatCryptoService cryptoService) : IRequestHandler<PublishKeyCommand, IReadOnlyList<RoomKeyResponse>>
     {
         public async Task<IReadOnlyList<RoomKeyResponse>> Handle(PublishKeyCommand request, CancellationToken ct)

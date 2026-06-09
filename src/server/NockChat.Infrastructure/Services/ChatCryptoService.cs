@@ -14,7 +14,7 @@ namespace NockChat.Infrastructure.Services
         /// <inheritdoc/>
         public bool IsValidPublicKey(string base64Key)
         {
-            if(string.IsNullOrWhiteSpace(base64Key)) 
+            if (string.IsNullOrWhiteSpace(base64Key))
                 return false;
 
             try
@@ -24,7 +24,7 @@ namespace NockChat.Infrastructure.Services
                 if (!Convert.TryFromBase64String(base64Key, keyBytes, out int bytesWritten))
                     return false;
 
-                if(bytesWritten != Curve25519KeyLength)
+                if (bytesWritten != Curve25519KeyLength)
                     return false;
 
                 _ = new X25519PublicKeyParameters(keyBytes);

@@ -28,7 +28,7 @@ namespace NockChat.Persistence.Repositories
                 .Select(m => new Message
                 {
                     Id = m.Id,
-                    Text = m.Text,
+                    EncryptedPayload = m.EncryptedPayload,
                     SentAt = m.SentAt,
                     ChatUserId = m.ChatUserId,
                     ChatUser = new ChatUser { Username = m.ChatUser.Username }

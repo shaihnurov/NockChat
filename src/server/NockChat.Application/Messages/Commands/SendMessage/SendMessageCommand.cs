@@ -1,6 +1,8 @@
-﻿using MediatR;
+﻿using System.Text.Json;
+using MediatR;
 using NockChat.Application.Common.Exceptions;
 using NockChat.Application.Common.Interfaces;
+using NockChat.Application.DTOs.Requests;
 using NockChat.Application.DTOs.Responses;
 using NockChat.Domain.Entities;
 
@@ -12,7 +14,7 @@ namespace NockChat.Application.Messages.Commands.SendMessage
     /// <param name="RoomId">Идентификатор комнаты</param>
     /// <param name="ChatUserId">Идентификатор отправителя</param>
     /// <param name="Text">Текст сообщения</param>
-    public record SendMessageCommand(int RoomId, int ChatUserId, string Text, string ConnectionId) : IRequest<MessageResponse>;
+    public record SendMessageCommand(int RoomId, int ChatUserId, EncryptedPayloadRequest Payload, string ConnectionId) : IRequest<MessageResponse>;
 
     /// <summary>
     /// Обработчик <see cref="SendMessageCommand"/>. Сохраняет сообщение в базе данных
@@ -21,6 +23,11 @@ namespace NockChat.Application.Messages.Commands.SendMessage
     public class SendMessageCommandHandler(IMessageRepository messageRepository, IChatUserRepository chatUserRepository,
         IChatNotificationService chatNotification) : IRequestHandler<SendMessageCommand, MessageResponse>
     {
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
         /// <summary>
         /// Проверяет принадлежность пользователя к комнате, создаёт сообщение
         /// и отправляет уведомление остальным участникам
@@ -38,19 +45,25 @@ namespace NockChat.Application.Messages.Commands.SendMessage
             {
                 RoomId = request.RoomId,
                 ChatUserId = request.ChatUserId,
-                Text = request.Text,
+                EncryptedPayload = JsonSerializer.Serialize(request.Payload, JsonOptions),
                 SentAt = DateTime.UtcNow
             };
 
             var created = await messageRepository.CreateAsync(message, ct);
 
+            var encryptedPayloadResponse = new EncryptedPayloadResponse(
+                request.Payload.Nonce,
+                request.Payload.Ciphertext,
+                request.Payload.RatchetPublicKey,
+                request.Payload.Counter);
+
             var response = new MessageResponse(
                 Id: created.Id,
-                Text: created.Text,
+                SenderId: request.ChatUserId,
                 Username: chatUser.Username,
+                EncryptedPayload: encryptedPayloadResponse,
                 IsOwn: false,
-                SentAt: created.SentAt
-            );
+                SentAt: created.SentAt);
 
             await chatNotification.SendMessageAsync(request.RoomId, request.ConnectionId, response, ct);
             return response with { IsOwn = true };
