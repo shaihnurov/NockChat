@@ -112,24 +112,24 @@ namespace NockChat.Services.HTTP.SignalR
         }
 
         /// <inheritdoc/>
-        public void OnMessageReceived(Action<MessageModel> handler)
-            => _connection?.On("ReceiveMessage", handler);
+        public IDisposable OnMessageReceived(Action<MessageModel> handler)
+            => _connection!.On("ReceiveMessage", handler);
 
         /// <inheritdoc/>
-        public void OnReceiveRoomKeys(Action<IReadOnlyList<RoomKeyModel>> handler)
-            => _connection?.On("ReceiveRoomKeys", handler);
+        public IDisposable OnReceiveRoomKeys(Action<IReadOnlyList<RoomKeyModel>> handler)
+            => _connection!.On("ReceiveRoomKeys", handler);
 
         /// <inheritdoc/>
-        public void OnParticipantKeyPublished(Action<RoomKeyModel> handler)
-            => _connection?.On("ParticipantKeyPublished", handler);
+        public IDisposable OnParticipantKeyPublished(Action<RoomKeyModel> handler)
+            => _connection!.On("ParticipantKeyPublished", handler);
 
         /// <inheritdoc/>
-        public void OnUserJoined(Action<string> handler)
-            => _connection?.On("UserJoined", handler);
+        public IDisposable OnUserJoined(Action<string> handler)
+            => _connection!.On("UserJoined", handler);
 
         /// <inheritdoc/>
-        public void OnUserLeft(Action<string> handler)
-            => _connection?.On("UserLeft", handler);
+        public IDisposable OnUserLeft(Action<string> handler)
+            => _connection!.On("UserLeft", handler);
 
         /// <summary>
         /// Разрывает подключение и освобождает все ресурсы сервиса

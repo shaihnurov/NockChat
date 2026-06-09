@@ -43,28 +43,28 @@ namespace NockChat.Services.HTTP.SignalR
         /// <summary>
         /// Подписывается на получение входящих зашифрованных сообщений
         /// </summary>
-        void OnMessageReceived(Action<MessageModel> handler);
+        IDisposable OnMessageReceived(Action<MessageModel> handler);
 
         /// <summary>
         /// Подписывается на получение ключей участников уже находящихся в комнате.
         /// Вызывается один раз сервером в ответ на PublishKey.
         /// </summary>
-        void OnReceiveRoomKeys(Action<IReadOnlyList<RoomKeyModel>> handler);
+        IDisposable OnReceiveRoomKeys(Action<IReadOnlyList<RoomKeyModel>> handler);
 
         /// <summary>
         /// Подписывается на событие публикации ключа новым участником.
         /// Вызывается когда кто-то новый входит в комнату после нас.
         /// </summary>
-        void OnParticipantKeyPublished(Action<RoomKeyModel> handler);
+        IDisposable OnParticipantKeyPublished(Action<RoomKeyModel> handler);
 
         /// <summary>
         /// Подписывается на событие входа нового пользователя в комнату
         /// </summary>
-        void OnUserJoined(Action<string> handler);
+        IDisposable OnUserJoined(Action<string> handler);
 
         /// <summary>
         /// Подписывается на событие выхода пользователя из комнаты
         /// </summary>
-        void OnUserLeft(Action<string> handler);
+        IDisposable OnUserLeft(Action<string> handler);
     }
 }

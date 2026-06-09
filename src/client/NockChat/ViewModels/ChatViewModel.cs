@@ -32,6 +32,11 @@ namespace NockChat.ViewModels
     {
         #region Properties
         /// <summary>
+        /// Хранит IDisposable подписки на события SignalR, чтобы можно было отписаться при выходе из комнаты
+        /// </summary>
+        private readonly List<IDisposable> _signalRSubscriptions = [];
+
+        /// <summary>
         /// Список сообщений текущей комнаты
         /// </summary>
         [ObservableProperty]
@@ -114,15 +119,12 @@ namespace NockChat.ViewModels
         /// </summary>
         private void SubscribeToSignalREvents()
         {
-            signalRService.OnReceiveRoomKeys(OnReceiveRoomKeys);
-            signalRService.OnParticipantKeyPublished(OnParticipantKeyPublished);
-            signalRService.OnMessageReceived(OnMessageReceived);
+            _signalRSubscriptions.Add(signalRService.OnReceiveRoomKeys(OnReceiveRoomKeys));
+            _signalRSubscriptions.Add(signalRService.OnParticipantKeyPublished(OnParticipantKeyPublished));
+            _signalRSubscriptions.Add(signalRService.OnMessageReceived(OnMessageReceived));
 
-            signalRService.OnUserJoined(username =>
-                Dispatcher.UIThread.Post(() => Messages.Add(CreateSystemMessage($"{username} вошёл в комнату"))));
-
-            signalRService.OnUserLeft(username =>
-                Dispatcher.UIThread.Post(() => Messages.Add(CreateSystemMessage($"{username} покинул комнату"))));
+            _signalRSubscriptions.Add(signalRService.OnUserJoined(username => Dispatcher.UIThread.Post(() => notificationService.ShowMessage($"{username} вошёл в комнату"))));
+            _signalRSubscriptions.Add(signalRService.OnUserLeft(username => Dispatcher.UIThread.Post(() => notificationService.ShowMessage($"{username} покинул комнату"))));
         }
 
         /// <summary>
@@ -234,6 +236,10 @@ namespace NockChat.ViewModels
         [RelayCommand]
         private async Task LeaveRoom()
         {
+            foreach (var sub in _signalRSubscriptions)
+                sub.Dispose();
+            _signalRSubscriptions.Clear();
+
             _cryptoManager?.Dispose();
             _cryptoManager = null;
 
@@ -259,14 +265,6 @@ namespace NockChat.ViewModels
                 notificationService.ShowError("Не удалось открыть настройки");
             }
         }
-
-        private static MessageModel CreateSystemMessage(string text) => new()
-        {
-            Text = text,
-            Username = "Система",
-            SentAt = DateTimeOffset.UtcNow,
-            IsOwn = false
-        };
         #endregion
     }
 }
