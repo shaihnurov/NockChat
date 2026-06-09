@@ -59,6 +59,8 @@ namespace NockChat.Infrastructure.Hubs
 
             await Clients.Caller.ReceiveRoomKeys(roomKeys);
             await Clients.OthersInGroup(RoomId.ToString()).ParticipantKeyPublished(new RoomKeyResponse(ChatUserId, Username, ephemeralPublicKey));
+
+            await Clients.OthersInGroup(RoomId.ToString()).UserJoined(Username);
         }
     }
 }
