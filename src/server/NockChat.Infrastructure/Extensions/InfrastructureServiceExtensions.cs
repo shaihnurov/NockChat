@@ -4,7 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using NockChat.Application.Common.Interfaces;
+using NockChat.Infrastructure.Redis;
 using NockChat.Infrastructure.Services;
+using StackExchange.Redis;
 
 namespace NockChat.Infrastructure.Extensions
 {
@@ -17,7 +19,11 @@ namespace NockChat.Infrastructure.Extensions
         {
             services.AddSignalR();
 
+            var redisConnectionString = configuration["Redis:ConnectionString"]!;
+            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
+
             services.AddSingleton<IChatCryptoService, ChatCryptoService>();
+            services.AddScoped<IParticipantKeyRepository, RedisParticipantKeyRepository>();
 
             services.AddTransient<ITokenService, TokenService>();
 

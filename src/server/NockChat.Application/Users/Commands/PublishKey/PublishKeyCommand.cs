@@ -29,7 +29,12 @@ namespace NockChat.Application.Users.Commands.PublishKey
                 ChatUserId = userContext.ChatUserId,
                 RoomId = userContext.RoomId,
                 EphemeralPublicKey = request.EphemeralPublicKey,
-                PublishedAt = DateTimeOffset.UtcNow
+                PublishedAt = DateTimeOffset.UtcNow,
+                ChatUser = new ChatUser
+                {
+                    Id = userContext.ChatUserId,
+                    Username = userContext.Username ?? string.Empty,
+                }
             }, ct);
 
             var existingKeys = await keyRepository.GetRoomKeysAsync(userContext.RoomId, userContext.ChatUserId, ct);

@@ -18,7 +18,6 @@ namespace NockChat.Persistence.Extensions
             services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<IChatUserRepository, ChatUserRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
-            services.AddScoped<IParticipantKeyRepository, ParticipantKeyRepository>();
 
             return services;
         }
