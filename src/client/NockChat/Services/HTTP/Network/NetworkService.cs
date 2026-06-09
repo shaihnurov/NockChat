@@ -117,7 +117,7 @@ namespace NockChat.Services.HTTP.Network
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (_disposed) 
+            if (_disposed)
                 return;
             _disposed = true;
 

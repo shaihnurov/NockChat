@@ -58,7 +58,7 @@ namespace NockChat.Services.Common.DataStorage.Settings
         public async Task LoadAsync()
         {
             await _fileLock.WaitAsync();
-            
+
             try
             {
                 if (!File.Exists(_filePath))

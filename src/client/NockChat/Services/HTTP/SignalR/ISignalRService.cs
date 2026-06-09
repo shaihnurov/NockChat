@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using NockChat.Models.Crypto;
 using NockChat.Models.Messages;
+using NockChat.Models.Rooms;
 
 namespace NockChat.Services.HTTP.SignalR
 {
@@ -18,7 +21,6 @@ namespace NockChat.Services.HTTP.SignalR
         /// <summary>
         /// Устанавливает подключение к SignalR-хабу
         /// </summary>
-        /// <param name="token">Токен сессии комнаты для аутентификации</param>
         Task ConnectAsync(string token, CancellationToken ct = default);
 
         /// <summary>
@@ -27,27 +29,42 @@ namespace NockChat.Services.HTTP.SignalR
         Task DisconnectAsync(CancellationToken ct = default);
 
         /// <summary>
-        /// Отправляет текстовое сообщение в текущую комнату
+        /// Отправляет зашифрованное сообщение в текущую комнату
         /// </summary>
-        /// <param name="text">Текст сообщения</param>
-        Task SendMessageAsync(string text, CancellationToken ct = default);
+        Task SendMessageAsync(EncryptedMessage message, CancellationToken ct = default);
 
         /// <summary>
-        /// Подписывается на получение входящих сообщений от сервера
+        /// Публикует наш ephemeral публичный ключ в комнату.
+        /// Вызывается сразу после подключения к хабу.
+        /// В ответ сервер пришлёт ReceiveRoomKeys с ключами остальных участников.
         /// </summary>
-        /// <param name="handler">Обработчик входящего сообщения</param>
+        Task PublishKeyAsync(string ephemeralPublicKey, CancellationToken ct = default);
+
+        /// <summary>
+        /// Подписывается на получение входящих зашифрованных сообщений
+        /// </summary>
         void OnMessageReceived(Action<MessageModel> handler);
+
+        /// <summary>
+        /// Подписывается на получение ключей участников уже находящихся в комнате.
+        /// Вызывается один раз сервером в ответ на PublishKey.
+        /// </summary>
+        void OnReceiveRoomKeys(Action<IReadOnlyList<RoomKeyModel>> handler);
+
+        /// <summary>
+        /// Подписывается на событие публикации ключа новым участником.
+        /// Вызывается когда кто-то новый входит в комнату после нас.
+        /// </summary>
+        void OnParticipantKeyPublished(Action<RoomKeyModel> handler);
 
         /// <summary>
         /// Подписывается на событие входа нового пользователя в комнату
         /// </summary>
-        /// <param name="handler">Обработчик, принимающий имя пользователя</param>
         void OnUserJoined(Action<string> handler);
 
         /// <summary>
         /// Подписывается на событие выхода пользователя из комнаты
         /// </summary>
-        /// <param name="handler">Обработчик, принимающий имя пользователя</param>
         void OnUserLeft(Action<string> handler);
     }
 }

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NockChat.Models.Crypto;
 using NockChat.Models.Messages;
+using NockChat.Models.Rooms;
 using NockChat.Services.Common.Exceptions;
 
 namespace NockChat.Services.HTTP.SignalR
@@ -67,14 +70,14 @@ namespace NockChat.Services.HTTP.SignalR
         }
 
         /// <inheritdoc/>
-        public async Task SendMessageAsync(string text, CancellationToken ct = default)
+        public async Task SendMessageAsync(EncryptedMessage message, CancellationToken ct = default)
         {
             if (_connection == null || !IsConnected)
                 throw new SignalRException("Нет подключения к чату");
 
             try
             {
-                await _connection.InvokeAsync("SendMessage", text, cancellationToken: ct);
+                await _connection.InvokeAsync("SendMessage", message, cancellationToken: ct);
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
@@ -88,8 +91,37 @@ namespace NockChat.Services.HTTP.SignalR
         }
 
         /// <inheritdoc/>
+        public async Task PublishKeyAsync(string ephemeralPublicKey, CancellationToken ct = default)
+        {
+            if (_connection == null || !IsConnected)
+                throw new SignalRException("Нет подключения к чату");
+
+            try
+            {
+                await _connection.InvokeAsync("PublishKey", ephemeralPublicKey, cancellationToken: ct);
+            }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to publish key.");
+                throw new SignalRException("Не удалось опубликовать ключ шифрования", ex);
+            }
+        }
+
+        /// <inheritdoc/>
         public void OnMessageReceived(Action<MessageModel> handler)
             => _connection?.On("ReceiveMessage", handler);
+
+        /// <inheritdoc/>
+        public void OnReceiveRoomKeys(Action<IReadOnlyList<RoomKeyModel>> handler)
+            => _connection?.On("ReceiveRoomKeys", handler);
+
+        /// <inheritdoc/>
+        public void OnParticipantKeyPublished(Action<RoomKeyModel> handler)
+            => _connection?.On("ParticipantKeyPublished", handler);
 
         /// <inheritdoc/>
         public void OnUserJoined(Action<string> handler)

@@ -1,17 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using NockChat.Models.Messages;
+using NockChat.Models.Rooms;
 using NockChat.Models.Sessions;
 using NockChat.Services.Common.Exceptions;
 using NockChat.Services.Common.Factory;
 using NockChat.Services.Common.Navigations;
 using NockChat.Services.Common.Notifications;
 using NockChat.Services.Common.UI;
+using NockChat.Services.Crypto;
 using NockChat.Services.HTTP.Requests.Messages;
 using NockChat.Services.HTTP.SignalR;
 using NockChat.ViewModels.Dialogs;
@@ -23,7 +27,7 @@ namespace NockChat.ViewModels
     /// <summary>
     /// ViewModel страницы чата
     /// </summary>
-    public partial class ChatViewModel(ISignalRService signalRService, IMessageRequestsService messageService, IServiceProvider serviceProvider,
+    public partial class ChatViewModel(ISignalRService signalRService, IMessageRequestsService messageService, IChatCryptoService cryptoService, IServiceProvider serviceProvider,
         INotificationService notificationService, INavigationService navigationService, IAppUiState appUiState, RoomSession session) : ViewModelBase
     {
         #region Properties
@@ -54,6 +58,8 @@ namespace NockChat.ViewModels
         /// Название текущей комнаты
         /// </summary>
         public string RoomName => session.RoomName;
+
+        private RoomCryptoManager? _cryptoManager;
         #endregion
 
         #region Methods
@@ -67,14 +73,23 @@ namespace NockChat.ViewModels
                 appUiState.IsVisibleMenu = false;
                 IsConnecting = true;
 
-                var result = await messageService.GetMessagesAsync(session.Token, 1, 100);
-                Messages = new ObservableCollection<MessageModel>(result.Items);
+                _cryptoManager = new RoomCryptoManager(cryptoService, session.RoomId);
 
                 await signalRService.ConnectAsync(session.Token);
-                signalRService.OnMessageReceived(msg =>
+
+                SubscribeToSignalREvents();
+
+                var ourPublicKeyBase64 = Convert.ToBase64String(_cryptoManager.OurPublicKey);
+                await signalRService.PublishKeyAsync(ourPublicKeyBase64);
+
+                var result = await messageService.GetMessagesAsync(session.Token, 1, 100);
+                var historyMessages = result.Items.Select(m =>
                 {
-                    Dispatcher.UIThread.Post(() => Messages.Add(msg));
+                    m.Text = "[сообщение недоступно — история зашифрована]";
+                    return m;
                 });
+
+                Messages = new ObservableCollection<MessageModel>(historyMessages);
             }
             catch (ServerException ex)
             {
@@ -95,6 +110,87 @@ namespace NockChat.ViewModels
         }
 
         /// <summary>
+        /// Подписывается на все SignalR события комнаты
+        /// </summary>
+        private void SubscribeToSignalREvents()
+        {
+            signalRService.OnReceiveRoomKeys(OnReceiveRoomKeys);
+            signalRService.OnParticipantKeyPublished(OnParticipantKeyPublished);
+            signalRService.OnMessageReceived(OnMessageReceived);
+
+            signalRService.OnUserJoined(username =>
+                Dispatcher.UIThread.Post(() => Messages.Add(CreateSystemMessage($"{username} вошёл в комнату"))));
+
+            signalRService.OnUserLeft(username =>
+                Dispatcher.UIThread.Post(() => Messages.Add(CreateSystemMessage($"{username} покинул комнату"))));
+        }
+
+        /// <summary>
+        /// Сервер вернул ключи всех участников уже находящихся в комнате
+        /// Устанавливаем крипто-сессию с каждым
+        /// </summary>
+        private void OnReceiveRoomKeys(IReadOnlyList<RoomKeyModel> keys)
+        {
+            if (_cryptoManager is null)
+                return;
+
+            foreach (var key in keys)
+            {
+                try
+                {
+                    var theirPublicKey = Convert.FromBase64String(key.EphemeralPublicKey);
+                    _cryptoManager.AddPeer(key.ChatUserId, theirPublicKey);
+                }
+                catch (Exception)
+                {
+                    notificationService.ShowError($"Не удалось установить сессию с {key.Username}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Новый участник опубликовал свой ключ — устанавливаем с ним крипто-сессию
+        /// </summary>
+        private void OnParticipantKeyPublished(RoomKeyModel key)
+        {
+            if (_cryptoManager is null)
+                return;
+
+            try
+            {
+                var theirPublicKey = Convert.FromBase64String(key.EphemeralPublicKey);
+                _cryptoManager.AddPeer(key.ChatUserId, theirPublicKey);
+            }
+            catch (Exception)
+            {
+                notificationService.ShowError($"Не удалось установить сессию с {key.Username}");
+            }
+        }
+
+        /// <summary>
+        /// Получено зашифрованное сообщение — дешифруем и добавляем в список
+        /// </summary>
+        private void OnMessageReceived(MessageModel msg)
+        {
+            if (_cryptoManager is null || msg.EncryptedPayload is null)
+                return;
+
+            try
+            {
+                if (_cryptoManager.HasSession(msg.SenderId))
+                    msg.Text = _cryptoManager.DecryptFrom(msg.SenderId, msg.EncryptedPayload);
+                else
+                    msg.Text = "[сообщение недоступно — нет крипто-сессии]";
+            }
+            catch (Exception)
+            {
+                msg.Text = "[не удалось расшифровать сообщение]";
+            }
+
+            Dispatcher.UIThread.Post(() => Messages.Add(msg));
+        }
+
+        /// <summary>
         /// Отправляет сообщение через SignalR
         /// Применяет оптимистичное обновление — сообщение добавляется в список до подтверждения сервера
         /// и удаляется обратно в случае ошибки
@@ -102,7 +198,7 @@ namespace NockChat.ViewModels
         [RelayCommand]
         private async Task SendMessage()
         {
-            if (string.IsNullOrWhiteSpace(MessageText))
+            if (string.IsNullOrWhiteSpace(MessageText) || _cryptoManager is null)
                 return;
 
             var text = MessageText;
@@ -121,7 +217,8 @@ namespace NockChat.ViewModels
 
             try
             {
-                await signalRService.SendMessageAsync(text);
+                foreach (var (peerId, encrypted) in _cryptoManager.EncryptForAll(text))
+                    await signalRService.SendMessageAsync(encrypted);
             }
             catch (SignalRException ex)
             {
@@ -137,8 +234,10 @@ namespace NockChat.ViewModels
         [RelayCommand]
         private async Task LeaveRoom()
         {
-            await signalRService.DisconnectAsync();
+            _cryptoManager?.Dispose();
+            _cryptoManager = null;
 
+            await signalRService.DisconnectAsync();
             await navigationService.RequestNavigation<ChatListViewModel>();
             appUiState.IsVisibleMenu = true;
         }
@@ -160,6 +259,14 @@ namespace NockChat.ViewModels
                 notificationService.ShowError("Не удалось открыть настройки");
             }
         }
+
+        private static MessageModel CreateSystemMessage(string text) => new()
+        {
+            Text = text,
+            Username = "Система",
+            SentAt = DateTimeOffset.UtcNow,
+            IsOwn = false
+        };
         #endregion
     }
 }

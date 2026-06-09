@@ -6,6 +6,7 @@ using NockChat.Services.Common.Factory;
 using NockChat.Services.Common.Navigations;
 using NockChat.Services.Common.Notifications;
 using NockChat.Services.Common.UI;
+using NockChat.Services.Crypto;
 using NockChat.Services.HTTP;
 using NockChat.Services.HTTP.Network;
 using NockChat.Services.HTTP.Options;
@@ -34,6 +35,7 @@ namespace NockChat.Services.Common.DependencyInjection
             services.AddSingleton<ILocalSessionService, LocalSessionService>();
             services.AddSingleton<INetworkService, NetworkService>();
             services.AddSingleton<ISignalRService, SignalRService>();
+            services.AddSingleton<IChatCryptoService, ChatCryptoService>();
 
             return services;
         }

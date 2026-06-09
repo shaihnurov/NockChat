@@ -13,6 +13,11 @@ namespace NockChat.Models.Sessions
         public string Token { get; set; } = string.Empty;
 
         /// <summary>
+        /// Идентификатор комнаты
+        /// </summary>
+        public int RoomId { get; set; }
+
+        /// <summary>
         /// Название комнаты, к которой привязана сессия
         /// </summary>
         public string RoomName { get; set; } = string.Empty;

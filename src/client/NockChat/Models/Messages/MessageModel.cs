@@ -1,4 +1,5 @@
 ﻿using System;
+using NockChat.Models.Crypto;
 
 namespace NockChat.Models.Messages
 {
@@ -31,5 +32,15 @@ namespace NockChat.Models.Messages
         /// Дата и время отправки сообщения
         /// </summary>
         public DateTimeOffset SentAt { get; set; }
+
+        /// <summary>
+        /// Идентификатор отправителя — нужен для поиска крипто-сессии
+        /// </summary>
+        public int SenderId { get; set; }
+
+        /// <summary>
+        /// Зашифрованный payload — null для исторических и системных сообщений
+        /// </summary>
+        public EncryptedMessage? EncryptedPayload { get; set; }
     }
 }
